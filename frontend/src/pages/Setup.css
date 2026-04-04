@@ -84,7 +84,7 @@
 }
 
 .search-clear:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
 }
 
@@ -131,7 +131,7 @@
   border-color: var(--c-color, var(--accent)) !important;
   background: color-mix(in srgb, var(--c-color, var(--accent)) 6%, transparent) !important;
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .company-card.selected {
@@ -233,4 +233,6 @@
   border-radius: var(--radius-md);
 }
 
-.begin-info strong { color: var(--text-primary); }
+.begin-info strong {
+  color: var(--text-primary);
+}

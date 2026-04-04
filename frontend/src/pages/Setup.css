@@ -33,6 +33,7 @@
 }
 
 .setup-section-label {
+  padding-bottom: 10px;
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
@@ -151,6 +152,17 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.company-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+  background: white;
+  /* Most logos look good on white background if transparent */
+  border-radius: 10px;
 }
 
 .company-name {

@@ -6,21 +6,21 @@ import { Check, Info, ChevronRight, Search, X } from 'lucide-react';
 import './Setup.css';
 
 const COMPANIES = [
-  { id: 'Google', name: 'Google', monogram: 'GO', color: '#4285F4', roles: ['Software Engineer', 'Data Scientist', 'Product Manager'] },
-  { id: 'Amazon', name: 'Amazon', monogram: 'AM', color: '#FF9900', roles: ['Software Engineer', 'SDE-II', 'QA Engineer'] },
-  { id: 'Microsoft', name: 'Microsoft', monogram: 'MS', color: '#00A4EF', roles: ['Software Engineer', 'Program Manager'] },
-  { id: 'Meta', name: 'Meta', monogram: 'ME', color: '#0668E1', roles: ['Software Engineer', 'Data Engineer'] },
-  { id: 'Apple', name: 'Apple', monogram: 'AP', color: '#A2AAAD', roles: ['Software Engineer', 'Hardware Engineer'] },
-  { id: 'Netflix', name: 'Netflix', monogram: 'NX', color: '#E50914', roles: ['Software Engineer', 'UI Engineer'] },
-  { id: 'JPMorgan', name: 'JPMorgan Chase', monogram: 'JP', color: '#3b82f6', roles: ['Software Engineer', 'Business Analyst'] },
-  { id: 'Goldman Sachs', name: 'Goldman Sachs', monogram: 'GS', color: '#10b981', roles: ['Software Engineer'] },
-  { id: 'Salesforce', name: 'Salesforce', monogram: 'SF', color: '#00A1E0', roles: ['Software Engineer', 'Sales Engineer'] },
-  { id: 'Adobe', name: 'Adobe', monogram: 'AD', color: '#FF0000', roles: ['Software Engineer', 'Experience Designer'] },
-  { id: 'Uber', name: 'Uber', monogram: 'UB', color: '#333333', roles: ['Software Engineer', 'Backend Engineer'] },
-  { id: 'Airbnb', name: 'Airbnb', monogram: 'AB', color: '#FF5A5F', roles: ['Software Engineer', 'Data Analyst'] },
-  { id: 'TCS', name: 'Tata Consultancy', monogram: 'TC', color: '#8b5cf6', roles: ['Software Engineer'] },
-  { id: 'Infosys', name: 'Infosys', monogram: 'IN', color: '#f59e0b', roles: ['Software Engineer'] },
-  { id: 'General HR', name: 'General HR', monogram: 'HR', color: '#6366f1', roles: ['General'] },
+  { id: 'Google', name: 'Google', monogram: 'GO', color: '#4285F4', logo: 'https://logo.clearbit.com/google.com', roles: ['Software Engineer', 'Data Scientist', 'Product Manager'] },
+  { id: 'Amazon', name: 'Amazon', monogram: 'AM', color: '#FF9900', logo: 'https://logo.clearbit.com/amazon.com', roles: ['Software Engineer', 'SDE-II', 'QA Engineer'] },
+  { id: 'Microsoft', name: 'Microsoft', monogram: 'MS', color: '#00A4EF', logo: 'https://logo.clearbit.com/microsoft.com', roles: ['Software Engineer', 'Program Manager'] },
+  { id: 'Meta', name: 'Meta', monogram: 'ME', color: '#0668E1', logo: 'https://logo.clearbit.com/meta.com', roles: ['Software Engineer', 'Data Engineer'] },
+  { id: 'Apple', name: 'Apple', monogram: 'AP', color: '#A2AAAD', logo: 'https://logo.clearbit.com/apple.com', roles: ['Software Engineer', 'Hardware Engineer'] },
+  { id: 'Netflix', name: 'Netflix', monogram: 'NX', color: '#E50914', logo: 'https://logo.clearbit.com/netflix.com', roles: ['Software Engineer', 'UI Engineer'] },
+  { id: 'JPMorgan', name: 'JPMorgan Chase', monogram: 'JP', color: '#3b82f6', logo: 'https://logo.clearbit.com/jpmorganchase.com', roles: ['Software Engineer', 'Business Analyst'] },
+  { id: 'Goldman Sachs', name: 'Goldman Sachs', monogram: 'GS', color: '#10b981', logo: 'https://logo.clearbit.com/goldmansachs.com', roles: ['Software Engineer'] },
+  { id: 'Salesforce', name: 'Salesforce', monogram: 'SF', color: '#00A1E0', logo: 'https://logo.clearbit.com/salesforce.com', roles: ['Software Engineer', 'Sales Engineer'] },
+  { id: 'Adobe', name: 'Adobe', monogram: 'AD', color: '#FF0000', logo: 'https://logo.clearbit.com/adobe.com', roles: ['Software Engineer', 'Experience Designer'] },
+  { id: 'Uber', name: 'Uber', monogram: 'UB', color: '#333333', logo: 'https://logo.clearbit.com/uber.com', roles: ['Software Engineer', 'Backend Engineer'] },
+  { id: 'Airbnb', name: 'Airbnb', monogram: 'AB', color: '#FF5A5F', logo: 'https://logo.clearbit.com/airbnb.com', roles: ['Software Engineer', 'Data Analyst'] },
+  { id: 'TCS', name: 'Tata Consultancy', monogram: 'TC', color: '#8b5cf6', logo: 'https://logo.clearbit.com/tcs.com', roles: ['Software Engineer'] },
+  { id: 'Infosys', name: 'Infosys', monogram: 'IN', color: '#f59e0b', logo: 'https://logo.clearbit.com/infosys.com', roles: ['Software Engineer'] },
+  { id: 'General HR', name: 'General HR', monogram: 'HR', color: '#6366f1', logo: null, roles: ['General'] },
 ];
 
 export default function Setup() {
@@ -30,7 +30,7 @@ export default function Setup() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const filteredCompanies = COMPANIES.filter(c => 
+  const filteredCompanies = COMPANIES.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.monogram.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -78,9 +78,9 @@ export default function Setup() {
             <div className="setup-section-label">Target Company</div>
             <div className="search-box glass">
               <Search size={16} className="search-icon" />
-              <input 
-                type="text" 
-                placeholder="Search companies..." 
+              <input
+                type="text"
+                placeholder="Search companies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -106,7 +106,18 @@ export default function Setup() {
                   style={{ '--c-color': c.color, animationDelay: `${i * 0.04}s` }}
                 >
                   <div className="company-monogram" style={{ background: `${c.color}18`, border: `1px solid ${c.color}35`, color: c.color }}>
-                    {c.monogram}
+                    {c.logo && (
+                      <img
+                        src={c.logo}
+                        alt={c.name}
+                        className="company-logo-img"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextElementSibling.style.display = 'block';
+                        }}
+                      />
+                    )}
+                    <span style={{ display: c.logo ? 'none' : 'block' }}>{c.monogram}</span>
                   </div>
                   <div className="company-name">{c.name}</div>
                   <div className="company-meta">5 questions</div>

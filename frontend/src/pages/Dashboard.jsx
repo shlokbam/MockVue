@@ -151,26 +151,26 @@ export default function Dashboard() {
                     <AreaChart data={dashData.score_trend} margin={{ top: 20, right: 10, left: -15, bottom: 0 }}>
                       <defs>
                         <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.04)" />
-                      <XAxis 
-                        dataKey="id" 
-                        stroke="var(--text-muted)" 
+                      <XAxis
+                        dataKey="id"
+                        stroke="var(--text-muted)"
                         axisLine={false}
                         tickLine={false}
                         tick={{ fontSize: 11, fontFamily: 'Inter' }}
                         tickFormatter={(id) => dashData.score_trend.find(p => p.id === id)?.date || ''}
                         dy={10}
                       />
-                      <YAxis 
-                        domain={[0, 100]} 
-                        stroke="var(--text-muted)" 
+                      <YAxis
+                        domain={[0, 100]}
+                        stroke="var(--text-muted)"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 11, fontFamily: 'Inter' }} 
+                        tick={{ fontSize: 11, fontFamily: 'Inter' }}
                       />
                       <Tooltip content={<CustomTooltip />} />
                       <Area

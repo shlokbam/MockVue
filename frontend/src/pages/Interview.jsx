@@ -326,26 +326,30 @@ export default function Interview() {
     const video = smallVideoRef.current;
     if (!video) return;
 
+    // Force play in case autoPlay didn't trigger (Mac/Safari common)
+    try { video.play(); } catch (e) { /* ignore */ }
+
     // Use a clearer interval for tracking (e.g. 500ms)
     faceIntervalRef.current = setInterval(async () => {
-      // Logic: If models aren't ready or video isn't actually data-ready, skip this frame
+      // Logic: If models aren't ready or video isn't actually "producing" pixels, skip this frame
       if (!faceapi.nets.tinyFaceDetector.isLoaded) return;
-      if (video.readyState !== 4) return; // 4 = HAVE_ENOUGH_DATA
+      
+      // video.readyState >= 2 is often enough for detection (HAVE_CURRENT_DATA)
+      if (video.readyState < 2 || video.paused || video.ended) return;
 
-      // We only reach this if the hardware is actually and truly "producing" pixels
       gazeFramesRef.current.total++;
 
       try {
         const detection = await faceapi.detectSingleFace(
           video,
-          new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.15 })
+          new faceapi.TinyFaceDetectorOptions({ inputSize: 256, scoreThreshold: 0.1 })
         );
 
-        if (detection) {
+        if (detection && detection.score > 0.1) {
           gazeFramesRef.current.looking++;
         }
       } catch (e) {
-        // Silently skip if detection engine itself hits a buffer error
+        // Silently skip frame
       }
     }, 500);
   };
@@ -416,17 +420,21 @@ export default function Interview() {
           smallVideoRef.current.srcObject = stream;
         }
 
-        // Just in case user navigated directly, make sure models are loaded
+        // GUARANTEE models are loaded and video is playing
         const MODEL_URL = '/models';
-        if (!faceapi.nets.tinyFaceDetector.isLoaded || !faceapi.nets.faceLandmark68TinyNet.isLoaded) {
+        if (!faceapi.nets.tinyFaceDetector.isLoaded) {
           try {
-            await Promise.all([
-              faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-              faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL),
-            ]);
+            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            await faceapi.nets.faceLandmark68TinyNet.loadFromUri(MODEL_URL);
           } catch (modelErr) {
-            console.warn('Interview: Models failed to load silently', modelErr);
+            console.error('Interview: AI Models failed to load.', modelErr.message);
+            // We don't throw here so the interview can at least proceed without gaze tracking
           }
+        }
+
+        // Final check: if video wasn't started, start it
+        if (smallVideoRef.current) {
+          try { await smallVideoRef.current.play(); } catch (e) { /* ignore */ }
         }
 
         if (!isCurrent) {

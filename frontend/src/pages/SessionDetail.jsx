@@ -80,36 +80,36 @@ export default function SessionDetail() {
               <div className="sd-meta-item"><Calendar size={14} /> {dateStr}</div>
             </div>
           </div>
-          
+
           <div className="sd-header-right">
             <div className="sd-overall-ring glass">
-               <div className="sd-ring-label">Aggregate Score</div>
-               <div className="sd-ring-value" style={{ color: getScoreColor(session.overall_score) }}>
-                 {session.overall_score}<span>/100</span>
-               </div>
+              <div className="sd-ring-label">Aggregate Score</div>
+              <div className="sd-ring-value" style={{ color: getScoreColor(session.overall_score) }}>
+                {session.overall_score}<span>/100</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Stats Summary */}
         <div className="sd-stats-grid animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
-          <ScoreCard 
-            score={session.overall_score} 
-            label="Total Proficiency" 
-            color="var(--accent-light)" 
-            icon={Award} 
+          <ScoreCard
+            score={session.overall_score}
+            label="Total Proficiency"
+            color="var(--accent-light)"
+            icon={Award}
           />
-          <ScoreCard 
-             score={Math.round(answers.reduce((acc, a) => acc + (a.confidence_score || 0), 0) / answers.length)} 
-             label="Avg. Confidence" 
-             color="var(--warning)" 
-             icon={TrendingUp} 
+          <ScoreCard
+            score={Math.round(answers.reduce((acc, a) => acc + (a.confidence_score || 0), 0) / answers.length)}
+            label="Avg. Confidence"
+            color="var(--warning)"
+            icon={TrendingUp}
           />
-          <ScoreCard 
-             score={Math.round(answers.reduce((acc, a) => acc + (a.eye_contact_score || 0), 0) / answers.length)} 
-             label="Avg. Eye Contact" 
-             color="var(--success)" 
-             icon={Star} 
+          <ScoreCard
+            score={Math.round(answers.reduce((acc, a) => acc + (a.eye_contact_score || 0), 0) / answers.length)}
+            label="Avg. Eye Contact"
+            color="var(--success)"
+            icon={Star}
           />
         </div>
 
@@ -124,8 +124,8 @@ export default function SessionDetail() {
             {answers.map((ans, idx) => {
               const total = (ans.answer_score || 0) + (ans.confidence_score || 0) + (ans.eye_contact_score || 0);
               return (
-                <div 
-                  key={ans.id} 
+                <div
+                  key={ans.id}
                   className="sd-question-card glass"
                   onClick={() => navigate(`/report/${ans.id}`)}
                 >
@@ -133,12 +133,12 @@ export default function SessionDetail() {
                   <div className="sd-q-main">
                     <p className="sd-q-text">{ans.question_text}</p>
                     <div className="sd-q-footer">
-                       <div className="sd-q-score" style={{ color: getScoreColor(total) }}>
-                         {Math.round(total)}<span>/100</span>
-                       </div>
-                       <div className="sd-q-link">
-                         View Report <ChevronRight size={14} />
-                       </div>
+                      <div className="sd-q-score" style={{ color: getScoreColor(total) }}>
+                        {Math.round(total)}<span>/100</span>
+                      </div>
+                      <div className="sd-q-link">
+                        View Report <ChevronRight size={14} />
+                      </div>
                     </div>
                   </div>
                 </div>

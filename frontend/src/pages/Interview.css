@@ -1,0 +1,176 @@
+.interview-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-base);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Top bar ───────────────────────────────────────────────────────────────── */
+.interview-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: rgba(6, 8, 17, 0.9);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+  position: relative;
+}
+
+.rec-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.rec-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--danger);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+.read-indicator {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-light);
+}
+
+.mv-logo-small {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.timer-display {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* ── Question area ─────────────────────────────────────────────────────────── */
+.question-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 80px;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+
+.question-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+
+.question-text {
+  font-size: clamp(22px, 3.5vw, 38px);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+  max-width: 740px;
+  color: var(--text-primary);
+}
+
+.reading-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  background: var(--accent-glow);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: var(--radius-full);
+  padding: 12px 22px;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.recording-hint {
+  margin-top: 28px;
+  font-size: 14px;
+  color: var(--text-muted);
+  animation: fadeIn 0.3s ease;
+}
+
+/* ── Live camera (bottom left) ─────────────────────────────────────────────── */
+.live-cam-wrap {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 20;
+}
+
+.live-cam-video {
+  width: 320px;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  transform: scaleX(-1);
+  border: 2px solid var(--border);
+  background: #000;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+.wpm-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* ── Stop button ───────────────────────────────────────────────────────────── */
+.stop-btn-wrap {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 20;
+}
+
+/* ── Progress Bar ─────────────────────────────────────────────────────────── */
+.progress-bar-wrap {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 10;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  transition: width 1s linear;
+}
+
+/* ── Reading phase bg tint ─────────────────────────────────────────────────── */
+.interview-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}

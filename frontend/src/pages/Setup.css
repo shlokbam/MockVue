@@ -1,0 +1,164 @@
+.setup-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  z-index: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.setup-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.setup-header p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* ── Section label ──────────────────────────────────────────────────────────── */
+.setup-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+/* ── Company Grid ──────────────────────────────────────────────────────────── */
+.company-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px;
+}
+
+.company-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  cursor: pointer;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-card) !important;
+  font-family: inherit;
+  transition: var(--transition);
+  animation: fadeInUp 0.35s ease both;
+  border-radius: var(--radius-lg) !important;
+}
+
+.company-card:hover {
+  border-color: var(--c-color, var(--accent)) !important;
+  background: color-mix(in srgb, var(--c-color, var(--accent)) 6%, transparent) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.company-card.selected {
+  border-color: var(--c-color, var(--accent)) !important;
+  background: color-mix(in srgb, var(--c-color, var(--accent)) 10%, transparent) !important;
+  box-shadow: 0 0 0 1px var(--c-color, var(--accent));
+}
+
+.company-monogram {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.company-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.company-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.company-check-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Role Selector ─────────────────────────────────────────────────────────── */
+.role-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.role-chip {
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.role-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent-light);
+  background: var(--accent-glow);
+}
+
+.role-chip.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent-light);
+  font-weight: 600;
+}
+
+/* ── Begin ─────────────────────────────────────────────────────────────────── */
+.begin-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.begin-info {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex: 1;
+  min-width: 220px;
+  border-radius: var(--radius-md);
+}
+
+.begin-info strong { color: var(--text-primary); }

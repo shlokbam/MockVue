@@ -1,0 +1,19 @@
+# Environment variables
+backend/.env
+frontend/.env
+*.env
+.env
+
+# Dependencies
+node_modules/
+backend/venv/
+__pycache__/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+npm-debug.log*

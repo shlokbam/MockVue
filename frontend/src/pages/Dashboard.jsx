@@ -1,0 +1,208 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import { Target, Plus, TrendingUp } from 'lucide-react';
+import './Dashboard.css';
+
+const CustomTooltip = ({ active, payload }) => {
+  if (active && payload?.length) {
+    const d = payload[0].payload;
+    return (
+      <div className="chart-tooltip glass">
+        <div className="ct-date">{d.date}</div>
+        <div className="ct-company">{d.company}</div>
+        <div className="ct-score">{d.score}<span>/100</span></div>
+      </div>
+    );
+  }
+  return null;
+};
+
+function ScoreColor(score) {
+  if (score >= 75) return 'var(--success)';
+  if (score >= 50) return 'var(--warning)';
+  return 'var(--danger)';
+}
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const [sessions, setSessions] = useState([]);
+  const [dashData, setDashData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [sessRes, dashRes] = await Promise.all([
+          api.get('/sessions'),
+          api.get('/dashboard'),
+        ]);
+        setSessions(sessRes.data);
+        setDashData(dashRes.data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const handleViewSession = async (sessionId) => {
+    try {
+      const { data: answers } = await api.get('/answers/session/' + sessionId);
+      if (answers && answers.length > 0) {
+        navigate(`/report/${answers[answers.length - 1].id}`);
+      } else {
+        alert('No reports found for this session.');
+      }
+    } catch (e) {
+      alert('Could not load session report.');
+    }
+  };
+
+  const completedSessions = sessions.filter((s) => s.status === 'complete');
+
+  return (
+    <div className="page">
+      <div className="mesh-bg" />
+      <Navbar />
+
+      <div className="dashboard-wrap">
+        {/* Header */}
+        <div className="dashboard-header animate-fadeInUp">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Welcome back, {user?.name?.split(' ')?.[0] ?? 'there'}. Ready to improve your score?</p>
+          </div>
+          <button
+            id="start-new-session"
+            className="btn btn-primary btn-lg"
+            onClick={() => navigate('/setup')}
+          >
+            <Plus size={16} />
+            New session
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="loading-state">
+            <div className="spinner" style={{ width: 28, height: 28 }} />
+          </div>
+        ) : (
+          <>
+            {/* Stats bar */}
+            {dashData && (
+              <div className="stats-row animate-fadeInUp">
+                <div className="stat-card glass">
+                  <div className="stat-icon"><TrendingUp size={16} /></div>
+                  <div className="stat-value">{dashData.total_sessions}</div>
+                  <div className="stat-label">Sessions completed</div>
+                </div>
+                <div className="stat-card glass">
+                  <div className="stat-icon"><TrendingUp size={16} /></div>
+                  <div className="stat-value" style={{ color: ScoreColor(dashData.average_score) }}>
+                    {dashData.average_score || '—'}
+                  </div>
+                  <div className="stat-label">Average score</div>
+                </div>
+                <div className="stat-card glass">
+                  <div className="stat-icon"><TrendingUp size={16} /></div>
+                  <div className="stat-value">
+                    {completedSessions.length > 0
+                      ? Math.max(...completedSessions.map((s) => s.overall_score))
+                      : '—'}
+                  </div>
+                  <div className="stat-label">Personal best</div>
+                </div>
+              </div>
+            )}
+
+            {/* Score trend chart */}
+            {dashData?.score_trend?.length > 0 && (
+              <div className="chart-section glass animate-fadeInUp">
+                <div className="chart-header">
+                  <div>
+                    <h2>Score Trend</h2>
+                    <p>Your progress across all sessions</p>
+                  </div>
+                </div>
+                <div className="chart-wrap">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={dashData.score_trend} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                      <XAxis dataKey="date" stroke="var(--text-muted)" tick={{ fontSize: 11, fontFamily: 'Inter' }} />
+                      <YAxis domain={[0, 100]} stroke="var(--text-muted)" tick={{ fontSize: 11, fontFamily: 'Inter' }} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        stroke="var(--accent)"
+                        strokeWidth={2}
+                        dot={{ fill: 'var(--accent)', r: 3, strokeWidth: 0 }}
+                        activeDot={{ r: 5, fill: 'var(--accent-light)', strokeWidth: 0 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {/* Past sessions */}
+            <div className="sessions-section animate-fadeInUp">
+              <h2>Past Sessions</h2>
+              {completedSessions.length === 0 ? (
+                <div className="empty-state glass">
+                  <div className="empty-icon-wrap">
+                    <Target size={28} style={{ color: 'var(--text-muted)' }} />
+                  </div>
+                  <h3>No sessions yet</h3>
+                  <p>Complete your first practice session and your history will appear here.</p>
+                  <button className="btn btn-primary" onClick={() => navigate('/setup')}>
+                    Start practising
+                  </button>
+                </div>
+              ) : (
+                <div className="session-list">
+                  {completedSessions.map((s, i) => (
+                    <div className="session-card glass" key={s.id} style={{ animationDelay: `${i * 0.04}s` }}>
+                      <div className="session-card-left">
+                        <div className="session-company">{s.company}</div>
+                        <div className="session-meta">
+                          <span className="chip">{s.role}</span>
+                          <span className="session-date">
+                            {new Date(s.date.endsWith('Z') ? s.date : s.date + 'Z').toLocaleDateString('en-IN', {
+                              day: 'numeric', month: 'short', year: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="session-card-right">
+                        <div
+                          className="session-score"
+                          style={{ color: ScoreColor(s.overall_score) }}
+                        >
+                          {s.overall_score}<span>/100</span>
+                        </div>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => handleViewSession(s.id)}
+                        >
+                          View report
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

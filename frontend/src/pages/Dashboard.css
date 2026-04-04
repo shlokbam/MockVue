@@ -1,0 +1,207 @@
+.dashboard-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+
+.dashboard-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
+}
+
+.dashboard-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ── Stats ─────────────────────────────────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.stat-card {
+  padding: 22px 24px;
+  transition: var(--transition);
+  position: relative;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.stat-icon {
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* ── Chart ─────────────────────────────────────────────────────────────────── */
+.chart-section {
+  padding: 24px 28px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.chart-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  letter-spacing: -0.02em;
+}
+
+.chart-section p {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.chart-wrap { padding-top: 4px; }
+
+.chart-tooltip {
+  padding: 10px 14px;
+  min-width: 120px;
+}
+
+.ct-date { font-size: 11px; color: var(--text-muted); }
+.ct-company { font-size: 12px; color: var(--text-secondary); margin: 2px 0; }
+.ct-score { font-size: 20px; font-weight: 700; }
+.ct-score span { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+/* ── Sessions ─────────────────────────────────────────────────────────────── */
+.sessions-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.session-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  gap: 20px;
+  transition: var(--transition);
+  animation: fadeInUp 0.35s ease both;
+}
+
+.session-card:hover { transform: translateX(3px); }
+
+.session-card-left { flex: 1; }
+
+.session-company {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.session-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.session-date { font-size: 12px; color: var(--text-muted); }
+
+.session-card-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.session-score {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.session-score span {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* ── Empty State ──────────────────────────────────────────────────────────── */
+.empty-state {
+  padding: 56px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.empty-icon-wrap {
+  width: 56px;
+  height: 56px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.empty-state h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.empty-state p { color: var(--text-secondary); font-size: 14px; max-width: 300px; margin-bottom: 4px; }
+
+/* ── Loading ──────────────────────────────────────────────────────────────── */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-header { flex-direction: column; align-items: flex-start; }
+  .session-card { flex-direction: column; align-items: flex-start; }
+}

@@ -212,12 +212,10 @@ export default function FeedbackReport() {
           <div className="report-breadcrumb" onClick={() => navigate(`/session/${answer.session_id}`)}>
             ← Back to Session Summary
           </div>
-          {question && (
-            <div className="report-question-header glass">
-              <div className="report-q-label">Question focus</div>
-              <div className="report-q-text">"{question.question_text}"</div>
-            </div>
-          )}
+          <div className="report-question-header glass animate-fadeInUp">
+            <div className="report-q-label">Question focus</div>
+            <div className="report-q-text">"{answer.question_text}"</div>
+          </div>
         </div>
 
         {/* ── Overall Score ──────────────────────────────────────────────────── */}

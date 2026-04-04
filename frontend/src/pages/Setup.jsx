@@ -2,12 +2,22 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
-import { Check, Info, ChevronRight } from 'lucide-react';
+import { Check, Info, ChevronRight, Search, X } from 'lucide-react';
 import './Setup.css';
 
 const COMPANIES = [
+  { id: 'Google', name: 'Google', monogram: 'GO', color: '#4285F4', roles: ['Software Engineer', 'Data Scientist', 'Product Manager'] },
+  { id: 'Amazon', name: 'Amazon', monogram: 'AM', color: '#FF9900', roles: ['Software Engineer', 'SDE-II', 'QA Engineer'] },
+  { id: 'Microsoft', name: 'Microsoft', monogram: 'MS', color: '#00A4EF', roles: ['Software Engineer', 'Program Manager'] },
+  { id: 'Meta', name: 'Meta', monogram: 'ME', color: '#0668E1', roles: ['Software Engineer', 'Data Engineer'] },
+  { id: 'Apple', name: 'Apple', monogram: 'AP', color: '#A2AAAD', roles: ['Software Engineer', 'Hardware Engineer'] },
+  { id: 'Netflix', name: 'Netflix', monogram: 'NX', color: '#E50914', roles: ['Software Engineer', 'UI Engineer'] },
   { id: 'JPMorgan', name: 'JPMorgan Chase', monogram: 'JP', color: '#3b82f6', roles: ['Software Engineer', 'Business Analyst'] },
   { id: 'Goldman Sachs', name: 'Goldman Sachs', monogram: 'GS', color: '#10b981', roles: ['Software Engineer'] },
+  { id: 'Salesforce', name: 'Salesforce', monogram: 'SF', color: '#00A1E0', roles: ['Software Engineer', 'Sales Engineer'] },
+  { id: 'Adobe', name: 'Adobe', monogram: 'AD', color: '#FF0000', roles: ['Software Engineer', 'Experience Designer'] },
+  { id: 'Uber', name: 'Uber', monogram: 'UB', color: '#333333', roles: ['Software Engineer', 'Backend Engineer'] },
+  { id: 'Airbnb', name: 'Airbnb', monogram: 'AB', color: '#FF5A5F', roles: ['Software Engineer', 'Data Analyst'] },
   { id: 'TCS', name: 'Tata Consultancy', monogram: 'TC', color: '#8b5cf6', roles: ['Software Engineer'] },
   { id: 'Infosys', name: 'Infosys', monogram: 'IN', color: '#f59e0b', roles: ['Software Engineer'] },
   { id: 'General HR', name: 'General HR', monogram: 'HR', color: '#6366f1', roles: ['General'] },
@@ -17,7 +27,13 @@ export default function Setup() {
   const navigate = useNavigate();
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [selectedRole, setSelectedRole] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const filteredCompanies = COMPANIES.filter(c => 
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.monogram.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleBegin = async () => {
     if (!selectedCompany || !selectedRole) return;
@@ -56,34 +72,58 @@ export default function Setup() {
           <p>Select the company and role you are preparing for</p>
         </div>
 
-        {/* Company Grid */}
+        {/* Company Selection Section */}
         <div className="setup-section animate-fadeInUp">
-          <div className="setup-section-label">Company</div>
-          <div className="company-grid">
-            {COMPANIES.map((c, i) => (
-              <button
-                key={c.id}
-                id={`company-${c.id.replace(/\s+/g, '-').toLowerCase()}`}
-                className={`company-card glass ${selectedCompany?.id === c.id ? 'selected' : ''}`}
-                onClick={() => {
-                  setSelectedCompany(c);
-                  setSelectedRole(c.roles.length === 1 ? c.roles[0] : '');
-                }}
-                style={{ '--c-color': c.color, animationDelay: `${i * 0.06}s` }}
-              >
-                <div className="company-monogram" style={{ background: `${c.color}18`, border: `1px solid ${c.color}35`, color: c.color }}>
-                  {c.monogram}
-                </div>
-                <div className="company-name">{c.name}</div>
-                <div className="company-meta">5 questions</div>
-                {selectedCompany?.id === c.id && (
-                  <div className="company-check-icon">
-                    <Check size={12} strokeWidth={2.5} />
-                  </div>
-                )}
-              </button>
-            ))}
+          <div className="setup-section-header">
+            <div className="setup-section-label">Target Company</div>
+            <div className="search-box glass">
+              <Search size={16} className="search-icon" />
+              <input 
+                type="text" 
+                placeholder="Search companies..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button className="search-clear" onClick={() => setSearchTerm('')}>
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
+
+          {filteredCompanies.length > 0 ? (
+            <div className="company-grid">
+              {filteredCompanies.map((c, i) => (
+                <button
+                  key={c.id}
+                  id={`company-${c.id.replace(/\s+/g, '-').toLowerCase()}`}
+                  className={`company-card glass ${selectedCompany?.id === c.id ? 'selected' : ''}`}
+                  onClick={() => {
+                    setSelectedCompany(c);
+                    setSelectedRole(c.roles.length === 1 ? c.roles[0] : '');
+                  }}
+                  style={{ '--c-color': c.color, animationDelay: `${i * 0.04}s` }}
+                >
+                  <div className="company-monogram" style={{ background: `${c.color}18`, border: `1px solid ${c.color}35`, color: c.color }}>
+                    {c.monogram}
+                  </div>
+                  <div className="company-name">{c.name}</div>
+                  <div className="company-meta">5 questions</div>
+                  {selectedCompany?.id === c.id && (
+                    <div className="company-check-icon">
+                      <Check size={12} strokeWidth={2.5} />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="search-empty glass">
+              <p>No companies matching "<strong>{searchTerm}</strong>"</p>
+              <button className="btn btn-ghost btn-sm" onClick={() => setSearchTerm('')}>Clear search</button>
+            </div>
+          )}
         </div>
 
         {/* Role Selector */}

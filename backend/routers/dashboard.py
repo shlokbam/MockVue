@@ -24,6 +24,7 @@ def get_dashboard(
 
     trend = [
         schemas.ScoreTrendPoint(
+            id=s.id,
             date=s.date.strftime("%b %d"),
             score=s.overall_score,
             company=s.company

@@ -70,3 +70,7 @@ class Answer(Base):
 
     session = relationship("Session", back_populates="answers")
     question = relationship("Question", back_populates="answers")
+
+    @property
+    def question_text(self):
+        return self.question.question_text if self.question else ""

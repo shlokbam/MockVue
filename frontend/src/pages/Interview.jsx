@@ -461,35 +461,40 @@ export default function Interview() {
 
       {/* ── Top bar ─────────────────────────────────────────────────────────── */}
       <div className="interview-topbar">
-        <button className="exit-btn" onClick={handleExit} title="Exit to Dashboard">
-          <LogOut size={14} />
-          <span>Exit Interview</span>
-        </button>
+        <div className="it-left">
+          <button className="exit-btn" onClick={handleExit} title="Exit to Dashboard">
+            <LogOut size={14} />
+            <span>Exit Interview</span>
+          </button>
+        </div>
 
-        {phase === 'recording' && (
-          <div className="rec-indicator">
-            <span className="rec-dot" />
-            Recording
+        <div className="it-center">
+          <div className="mv-logo-small">MockVue</div>
+          {phase === 'recording' && (
+            <div className="rec-indicator">
+              <span className="rec-dot" />
+              Recording
+            </div>
+          )}
+          {phase === 'reading' && (
+            <div className="read-indicator">
+              <BookOpen size={13} />
+              Reading time
+            </div>
+          )}
+        </div>
+
+        <div className="it-right">
+          <div className="timer-display">
+            {phase === 'reading'
+              ? <span style={{ color: readTimeLeft <= 10 ? 'var(--warning)' : 'var(--text-primary)' }}>
+                  {formatTime(readTimeLeft)}
+                </span>
+              : <span style={{ color: recTimeLeft <= 30 ? 'var(--warning)' : 'var(--text-primary)' }}>
+                  {formatTime(recTimeLeft)}
+                </span>
+            }
           </div>
-        )}
-        {phase === 'reading' && (
-          <div className="read-indicator">
-            <BookOpen size={13} />
-            Reading time
-          </div>
-        )}
-
-        <div className="mv-logo-small">MockVue</div>
-
-        <div className="timer-display">
-          {phase === 'reading'
-            ? <span style={{ color: readTimeLeft <= 10 ? 'var(--warning)' : 'var(--text-primary)' }}>
-                {formatTime(readTimeLeft)}
-              </span>
-            : <span style={{ color: recTimeLeft <= 30 ? 'var(--warning)' : 'var(--text-primary)' }}>
-                {formatTime(recTimeLeft)}
-              </span>
-          }
         </div>
       </div>
 

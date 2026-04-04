@@ -157,11 +157,12 @@ export default function Dashboard() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.04)" />
                       <XAxis 
-                        dataKey="date" 
+                        dataKey="id" 
                         stroke="var(--text-muted)" 
                         axisLine={false}
                         tickLine={false}
                         tick={{ fontSize: 11, fontFamily: 'Inter' }}
+                        tickFormatter={(id) => dashData.score_trend.find(p => p.id === id)?.date || ''}
                         dy={10}
                       />
                       <YAxis 

@@ -131,7 +131,7 @@ export default function SessionDetail() {
                 >
                   <div className="sd-q-badge">Question {idx + 1}</div>
                   <div className="sd-q-main">
-                    <p className="sd-q-text">Click to view transcript and deep-dive analysis for this response...</p>
+                    <p className="sd-q-text">{ans.question_text}</p>
                     <div className="sd-q-footer">
                        <div className="sd-q-score" style={{ color: getScoreColor(total) }}>
                          {Math.round(total)}<span>/100</span>

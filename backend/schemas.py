@@ -111,6 +111,7 @@ class AnswerOut(BaseModel):
     pause_count: int
     gaze_percentage: float
     groq_feedback: Optional[Any]
+    question_text: str
     created_at: datetime
 
     class Config:
@@ -120,6 +121,7 @@ class AnswerOut(BaseModel):
 # ─── Dashboard ───────────────────────────────────────────────────────────────
 
 class ScoreTrendPoint(BaseModel):
+    id: int
     date: str
     score: float
     company: str

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as faceapi from 'face-api.js';
-import { Square, BookOpen, Mic } from 'lucide-react';
+import { Square, BookOpen, Mic, LogOut } from 'lucide-react';
+import api from '../services/api';
+import ConfirmModal from '../components/ConfirmModal';
 import './Interview.css';
 
 const FILLER_WORDS = ['um', 'uh', 'like', 'you know', 'basically', 'actually', 'right'];
@@ -49,6 +51,9 @@ export default function Interview() {
 
   const [wpm, setWpm] = useState(0);
   const [ , setTranscript ] = useState('');
+
+  // Modal state
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const hasFinishedRef = useRef(false);
 
@@ -127,7 +132,6 @@ export default function Interview() {
       sessionStorage.setItem('mv_analytics', JSON.stringify(analytics));
       navigate('/processing');
     };
-
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.onstop = doFinish;
       try {
@@ -139,6 +143,29 @@ export default function Interview() {
       doFinish();
     }
   }, [navigate]);
+
+  const handleExit = () => {
+    setIsExitModalOpen(true);
+  };
+
+  const confirmExit = async () => {
+    // Stop everything
+    stopAll();
+    
+    try {
+      if (qIndex === 0) {
+        // Disqualify: Delete session if exiting on 1st question
+        await api.delete(`/sessions/${session.id}`);
+      } else {
+        // Mark session as complete (backend will compute average of current answers)
+        await api.patch(`/sessions/${session.id}/complete`);
+      }
+    } catch (err) {
+      console.warn("Interview: exit processing failed", err);
+    }
+    
+    navigate('/dashboard');
+  };
 
   const startRecordingPhase = useCallback(() => {
     try {
@@ -434,6 +461,11 @@ export default function Interview() {
 
       {/* ── Top bar ─────────────────────────────────────────────────────────── */}
       <div className="interview-topbar">
+        <button className="exit-btn" onClick={handleExit} title="Exit to Dashboard">
+          <LogOut size={14} />
+          <span>Exit Interview</span>
+        </button>
+
         {phase === 'recording' && (
           <div className="rec-indicator">
             <span className="rec-dot" />
@@ -524,6 +556,19 @@ export default function Interview() {
           </button>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={isExitModalOpen}
+        title="Exit Interview?"
+        message={qIndex === 0 
+          ? "Exiting on the first question will disqualify this session. It will not be saved to your history."
+          : "Are you sure you want to exit? Your session will end here and a report will be generated for the questions you've already answered."
+        }
+        confirmText="Exit Interview"
+        variant="danger"
+        onConfirm={confirmExit}
+        onCancel={() => setIsExitModalOpen(false)}
+      />
     </div>
   );
 }

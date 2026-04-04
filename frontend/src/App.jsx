@@ -9,6 +9,7 @@ import CameraCheck from './pages/CameraCheck';
 import Interview from './pages/Interview';
 import Processing from './pages/Processing';
 import FeedbackReport from './pages/FeedbackReport';
+import SessionDetail from './pages/SessionDetail';
 import SessionComplete from './pages/SessionComplete';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/interview" element={<ProtectedRoute><ErrorBoundary><Interview /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/processing" element={<ProtectedRoute><Processing /></ProtectedRoute>} />
           <Route path="/report/:answerId" element={<ProtectedRoute><FeedbackReport /></ProtectedRoute>} />
+          <Route path="/session/:sessionId" element={<ProtectedRoute><SessionDetail /></ProtectedRoute>} />
           <Route path="/session-complete" element={<ProtectedRoute><ErrorBoundary><SessionComplete /></ErrorBoundary></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

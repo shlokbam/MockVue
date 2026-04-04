@@ -4,7 +4,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { Target, Plus, TrendingUp } from 'lucide-react';
+import { Target, Plus, TrendingUp, Trash2 } from 'lucide-react';
+import ConfirmModal from '../components/ConfirmModal';
 import './Dashboard.css';
 
 const CustomTooltip = ({ active, payload }) => {
@@ -35,6 +36,10 @@ export default function Dashboard() {
   const [dashData, setDashData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Modal state
+  const [isDelModalOpen, setIsDelModalOpen] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState(null);
+
   useEffect(() => {
     (async () => {
       try {
@@ -52,16 +57,26 @@ export default function Dashboard() {
     })();
   }, []);
 
-  const handleViewSession = async (sessionId) => {
+  const handleViewSession = (sessionId) => {
+    navigate(`/session/${sessionId}`);
+  };
+
+  const handleDeleteSession = (e, sessionId) => {
+    e.stopPropagation();
+    setSessionToDelete(sessionId);
+    setIsDelModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!sessionToDelete) return;
     try {
-      const { data: answers } = await api.get('/answers/session/' + sessionId);
-      if (answers && answers.length > 0) {
-        navigate(`/report/${answers[answers.length - 1].id}`);
-      } else {
-        alert('No reports found for this session.');
-      }
-    } catch (e) {
-      alert('Could not load session report.');
+      await api.delete(`/sessions/${sessionToDelete}`);
+      setSessions(prev => prev.filter(s => s.id !== sessionToDelete));
+    } catch (err) {
+      console.error("Failed to delete session:", err);
+    } finally {
+      setIsDelModalOpen(false);
+      setSessionToDelete(null);
     }
   };
 
@@ -188,12 +203,21 @@ export default function Dashboard() {
                         >
                           {s.overall_score}<span>/100</span>
                         </div>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => handleViewSession(s.id)}
-                        >
-                          View report
-                        </button>
+                        <div className="session-actions">
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleViewSession(s.id)}
+                          >
+                            View report
+                          </button>
+                          <button
+                            className="btn-delete-icon"
+                            onClick={(e) => handleDeleteSession(e, s.id)}
+                            title="Delete session"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -203,6 +227,19 @@ export default function Dashboard() {
           </>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={isDelModalOpen}
+        title="Delete Session Report"
+        message="Are you sure you want to delete this practice session? This action cannot be undone."
+        confirmText="Delete Report"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setIsDelModalOpen(false);
+          setSessionToDelete(null);
+        }}
+      />
     </div>
   );
 }

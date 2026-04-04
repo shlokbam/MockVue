@@ -76,3 +76,21 @@ def complete_session(
     db.commit()
     db.refresh(session)
     return session
+
+
+@router.delete("/{session_id}")
+def delete_session(
+    session_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    session = db.query(models.Session).filter(
+        models.Session.id == session_id,
+        models.Session.user_id == current_user.id
+    ).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    db.delete(session)
+    db.commit()
+    return {"status": "success", "message": "Session deleted"}

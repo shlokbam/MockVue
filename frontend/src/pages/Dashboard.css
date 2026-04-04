@@ -1,12 +1,13 @@
 .dashboard-wrap {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 48px 24px 80px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 56px 60px 80px;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .dashboard-header {
@@ -38,7 +39,7 @@
 }
 
 .stat-card {
-  padding: 22px 24px;
+  padding: 16px 20px;
   transition: var(--transition);
   position: relative;
 }
@@ -107,7 +108,7 @@
 .sessions-section h2 {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   letter-spacing: -0.02em;
 }
 
@@ -149,8 +150,34 @@
 .session-card-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 24px;
   flex-shrink: 0;
+}
+
+.session-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-delete-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-delete-icon:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--danger);
 }
 
 .session-score {

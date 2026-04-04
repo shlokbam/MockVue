@@ -47,7 +47,7 @@ class Session(Base):
     status = Column(String(20), default="active")
 
     user = relationship("User", back_populates="sessions")
-    answers = relationship("Answer", back_populates="session")
+    answers = relationship("Answer", back_populates="session", cascade="all, delete-orphan")
 
 
 class Answer(Base):

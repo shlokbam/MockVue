@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 28px;
+  padding: 16px 60px;
   background: rgba(6, 8, 17, 0.9);
   border-bottom: 1px solid var(--border);
   z-index: 10;
@@ -63,6 +63,28 @@
   text-align: right;
 }
 
+.exit-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-right: 24px; /* Space before indicators */
+}
+
+.exit-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: var(--danger);
+}
+
 /* ── Question area ─────────────────────────────────────────────────────────── */
 .question-area {
   flex: 1;
@@ -70,7 +92,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 80px;
+  padding: 40px 60px;
   text-align: center;
   position: relative;
   z-index: 5;
@@ -89,7 +111,7 @@
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.5px;
-  max-width: 740px;
+  max-width: 1200px;
   color: var(--text-primary);
 }
 

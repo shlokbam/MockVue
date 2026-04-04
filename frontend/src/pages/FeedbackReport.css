@@ -1,7 +1,8 @@
 .report-wrap {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 40px 24px 80px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 56px 60px 80px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -10,6 +11,26 @@
 }
 
 /* ── Question header ────────────────────────────────────────────────────────── */
+.report-nav-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-breadcrumb {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  width: fit-content;
+}
+
+.report-breadcrumb:hover { color: var(--accent-light); }
+
 .report-question-header {
   padding: 20px 28px;
 }
@@ -344,9 +365,24 @@
 /* ── Actions ────────────────────────────────────────────────────────────────── */
 .report-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.report-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.report-nav-status {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 /* ── Responsive ─────────────────────────────────────────────────────────────── */

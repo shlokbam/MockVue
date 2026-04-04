@@ -127,16 +127,24 @@ export default function FeedbackReport() {
   const navigate = useNavigate();
   const [answer, setAnswer] = useState(null);
   const [question, setQuestion] = useState(null);
+  const [sessionSiblings, setSessionSiblings] = useState([]);
+  const [totalQuestions, setTotalQuestions] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const { data: ans } = await api.get(`/answers/${answerId}`);
         setAnswer(ans);
 
+        // Fetch sibling answers for navigation
+        const { data: siblings } = await api.get(`/answers/session/${ans.session_id}`);
+        setSessionSiblings(siblings.sort((a, b) => a.id - b.id));
+
         const questions = JSON.parse(sessionStorage.getItem('mv_questions') || '[]');
+        setTotalQuestions(questions.length);
         const q = questions.find((q) => q.id === ans.question_id);
         setQuestion(q || null);
       } catch (e) {
@@ -200,12 +208,17 @@ export default function FeedbackReport() {
 
       <div className="report-wrap">
         {/* Question header */}
-        {question && (
-          <div className="report-question-header glass animate-fadeInUp">
-            <div className="report-q-label">Question answered</div>
-            <div className="report-q-text">"{question.question_text}"</div>
+        <div className="report-nav-header animate-fadeInUp">
+          <div className="report-breadcrumb" onClick={() => navigate(`/session/${answer.session_id}`)}>
+            ← Back to Session Summary
           </div>
-        )}
+          {question && (
+            <div className="report-question-header glass">
+              <div className="report-q-label">Question focus</div>
+              <div className="report-q-text">"{question.question_text}"</div>
+            </div>
+          )}
+        </div>
 
         {/* ── Overall Score ──────────────────────────────────────────────────── */}
         <div className="overall-card glass animate-fadeInUp">
@@ -384,11 +397,42 @@ export default function FeedbackReport() {
 
         {/* ── Actions ─────────────────────────────────────────────────────────── */}
         <div className="report-actions animate-fadeInUp">
-          <button className="btn btn-secondary" id="try-again-btn" onClick={handleTryAgain}>
-            ↩ Try This Question Again
-          </button>
-          <button className="btn btn-primary btn-lg" id="next-question-btn" onClick={handleNextQuestion}>
-            Next Question →
+          <div className="report-nav-group">
+            <button 
+              className="btn btn-secondary" 
+              disabled={sessionSiblings.findIndex(s => s.id === answer.id) === 0}
+              onClick={() => {
+                const idx = sessionSiblings.findIndex(s => s.id === answer.id);
+                navigate(`/report/${sessionSiblings[idx - 1].id}`);
+              }}
+            >
+              ← Previous Question
+            </button>
+            <div className="report-nav-status">
+              Question {sessionSiblings.findIndex(s => s.id === answer.id) + 1} of {Math.max(totalQuestions, sessionSiblings.length)}
+            </div>
+
+            {/* If we're on the last answered question, but the session isn't over, show 'Continue' */}
+            {sessionSiblings.findIndex(s => s.id === answer.id) === sessionSiblings.length - 1 && sessionSiblings.length < totalQuestions ? (
+              <button className="btn btn-primary" onClick={handleNextQuestion}>
+                Continue to Next Question →
+              </button>
+            ) : (
+              <button 
+                className="btn btn-primary"
+                disabled={sessionSiblings.findIndex(s => s.id === answer.id) === sessionSiblings.length - 1}
+                onClick={() => {
+                  const idx = sessionSiblings.findIndex(s => s.id === answer.id);
+                  navigate(`/report/${sessionSiblings[idx + 1].id}`);
+                }}
+              >
+                Next Question Report →
+              </button>
+            )}
+          </div>
+          
+          <button className="btn btn-ghost" onClick={() => navigate('/dashboard')}>
+            Exit to Dashboard
           </button>
         </div>
       </div>

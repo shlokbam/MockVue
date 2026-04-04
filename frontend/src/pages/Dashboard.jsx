@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -147,21 +147,42 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="chart-wrap">
-                  <ResponsiveContainer width="100%" height={200}>
-                    <LineChart data={dashData.score_trend} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                      <XAxis dataKey="date" stroke="var(--text-muted)" tick={{ fontSize: 11, fontFamily: 'Inter' }} />
-                      <YAxis domain={[0, 100]} stroke="var(--text-muted)" tick={{ fontSize: 11, fontFamily: 'Inter' }} />
+                  <ResponsiveContainer width="100%" height={220}>
+                    <AreaChart data={dashData.score_trend} margin={{ top: 20, right: 10, left: -15, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="var(--accent)" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.04)" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="var(--text-muted)" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fontFamily: 'Inter' }}
+                        dy={10}
+                      />
+                      <YAxis 
+                        domain={[0, 100]} 
+                        stroke="var(--text-muted)" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fontFamily: 'Inter' }} 
+                      />
                       <Tooltip content={<CustomTooltip />} />
-                      <Line
+                      <Area
                         type="monotone"
                         dataKey="score"
                         stroke="var(--accent)"
-                        strokeWidth={2}
-                        dot={{ fill: 'var(--accent)', r: 3, strokeWidth: 0 }}
-                        activeDot={{ r: 5, fill: 'var(--accent-light)', strokeWidth: 0 }}
+                        strokeWidth={3}
+                        fillOpacity={1}
+                        fill="url(#scoreGradient)"
+                        dot={{ fill: 'var(--accent)', r: 4, strokeWidth: 0 }}
+                        activeDot={{ r: 6, fill: '#fff', strokeWidth: 2, stroke: 'var(--accent)' }}
                       />
-                    </LineChart>
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </div>

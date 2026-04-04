@@ -333,6 +333,14 @@
   font-weight: 600;
 }
 
+.quality-highlight {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+  border-radius: 3px;
+  padding: 1px 3px;
+  font-weight: 600;
+}
+
 /* ── Actions ────────────────────────────────────────────────────────────────── */
 .report-actions {
   display: flex;

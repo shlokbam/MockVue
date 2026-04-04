@@ -24,7 +24,7 @@ export default function App() {
           <Route path="/interview" element={<ProtectedRoute><ErrorBoundary><Interview /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/processing" element={<ProtectedRoute><Processing /></ProtectedRoute>} />
           <Route path="/report/:answerId" element={<ProtectedRoute><FeedbackReport /></ProtectedRoute>} />
-          <Route path="/session-complete" element={<ProtectedRoute><SessionComplete /></ProtectedRoute>} />
+          <Route path="/session-complete" element={<ProtectedRoute><ErrorBoundary><SessionComplete /></ErrorBoundary></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

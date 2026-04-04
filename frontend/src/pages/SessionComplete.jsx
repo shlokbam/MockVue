@@ -123,7 +123,7 @@ export default function SessionComplete() {
         </div>
 
         {/* Best / Worst */}
-        {best && (
+        {sessionSummary?.best && (
           <div className="complete-details-grid animate-fadeInUp">
             <div className="cd-card glass">
               <div className="cd-label">
@@ -136,7 +136,7 @@ export default function SessionComplete() {
               </div>
             </div>
 
-            {sessionSummary?.worst !== sessionSummary?.best && (
+            {sessionSummary?.worst && sessionSummary?.worst !== sessionSummary?.best && (
               <div className="cd-card glass">
                 <div className="cd-label">
                   <AlertTriangle size={12} style={{ display: 'inline', marginRight: 5, color: 'var(--warning)' }} />

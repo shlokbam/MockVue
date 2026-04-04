@@ -299,45 +299,28 @@ export default function Interview() {
     const video = smallVideoRef.current;
     if (!video) return;
 
+    // Use a clearer interval for tracking (e.g. 500ms)
     faceIntervalRef.current = setInterval(async () => {
-      frameCountRef.current++;
-      if (frameCountRef.current % 10 !== 0) return; // Every 10th frame
+      // Logic: If models aren't ready or video isn't actually data-ready, skip this frame
+      if (!faceapi.nets.tinyFaceDetector.isLoaded) return;
+      if (video.readyState !== 4) return; // 4 = HAVE_ENOUGH_DATA
+
+      // We only reach this if the hardware is actually and truly "producing" pixels
+      gazeFramesRef.current.total++;
 
       try {
-        if (!faceapi.nets.tinyFaceDetector.isLoaded) return; // Wait for models
-
         const detection = await faceapi.detectSingleFace(
           video,
-          new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 })
-        ).withFaceLandmarks(true);
+          new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.15 })
+        );
 
         if (detection) {
-          // Valid frame with face detected
-          gazeFramesRef.current.total++;
-
-          const landmarks = detection.landmarks;
-          const leftEye = landmarks.getLeftEye();
-          const rightEye = landmarks.getRightEye();
-
-          // Compute gaze offset: average eye position relative to face box centre
-          const faceBox = detection.detection.box;
-          const faceCentreX = faceBox.x + faceBox.width / 2;
-          const eyeAvgX = (
-            leftEye.reduce((a, p) => a + p.x, 0) / leftEye.length +
-            rightEye.reduce((a, p) => a + p.x, 0) / rightEye.length
-          ) / 2;
-
-          const offsetRatio = Math.abs(eyeAvgX - faceCentreX) / faceBox.width;
-
-          // If offset < 0.25, considered looking at camera (lenient to handle face asymmetry)
-          if (offsetRatio < 0.25) {
-            gazeFramesRef.current.looking++;
-          }
+          gazeFramesRef.current.looking++;
         }
       } catch (e) {
-        // No face detected this frame or error — skip counting entirely so score doesn't unjustly plummet
+        // Silently skip if detection engine itself hits a buffer error
       }
-    }, 100);
+    }, 500);
   };
 
 

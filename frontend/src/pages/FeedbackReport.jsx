@@ -44,13 +44,35 @@ function ProgressBar({ value, max, color }) {
   );
 }
 
-function highlightFillers(text, breakdown) {
-  if (!text || !breakdown) return text;
+const QUALITY_WORDS = [
+  'team', 'growth', 'challenge', 'results', 'impact', 
+  'framework', 'strategy', 'develop', 'developed', 'lead', 'led', 
+  'managed', 'improve', 'improved', 'achieve', 'achieved', 
+  'tcs', 'technology', 'technologies', 'leadership', 'communicate',
+  'scalable', 'deploy', 'collaborate', 'collaborated', 'agile', 
+  'learning', 'learn', 'metrics', 'optimize', 'optimized',
+  'giant', 'project', 'sector', 'india', 'future', 'server', 'ai'
+];
+
+function highlightTranscript(text, breakdown) {
+  if (!text) return text;
   let result = text;
-  Object.keys(breakdown).forEach((fw) => {
-    const regex = new RegExp(`\\b(${fw})\\b`, 'gi');
-    result = result.replace(regex, `<mark class="filler-highlight">$1</mark>`);
+  
+  // Highlight filler words (amber)
+  if (breakdown) {
+    Object.keys(breakdown).forEach((fw) => {
+      // Use negative lookbehind/lookahead to avoid matching inside HTML tags
+      const regex = new RegExp(`(?<!<[^>]*)\\b(${fw})\\b(?![^<]*>)`, 'gi');
+      result = result.replace(regex, `<mark class="filler-highlight">$1</mark>`);
+    });
+  }
+
+  // Highlight quality words (green)
+  QUALITY_WORDS.forEach((qw) => {
+    const regex = new RegExp(`(?<!<[^>]*)\\b(${qw})\\b(?![^<]*>)`, 'gi');
+    result = result.replace(regex, `<mark class="quality-highlight">$1</mark>`);
   });
+
   return result;
 }
 
@@ -337,7 +359,10 @@ export default function FeedbackReport() {
           <div className="ts-header">
             <h2>📝 Your Transcript</h2>
             {answer.transcript ? (
-              <span className="ts-note">Filler words highlighted in amber</span>
+              <span className="ts-note">
+                <span style={{ color: 'var(--warning)' }}>■</span> Filler words 
+                <span style={{ marginLeft: 12, color: 'var(--success)' }}>■</span> Quality words
+              </span>
             ) : (
               <span className="ts-note" style={{ color: 'var(--danger)' }}>No speech detected</span>
             )}
@@ -346,7 +371,7 @@ export default function FeedbackReport() {
             {answer.transcript ? (
               <div
                 dangerouslySetInnerHTML={{
-                  __html: highlightFillers(answer.transcript, fillerBreakdown)
+                  __html: highlightTranscript(answer.transcript, fillerBreakdown)
                 }}
               />
             ) : (

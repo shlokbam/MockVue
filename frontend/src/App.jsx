@@ -10,6 +10,7 @@ import Interview from './pages/Interview';
 import Processing from './pages/Processing';
 import FeedbackReport from './pages/FeedbackReport';
 import SessionComplete from './pages/SessionComplete';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export default function App() {
   return (
@@ -20,7 +21,7 @@ export default function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/setup" element={<ProtectedRoute><Setup /></ProtectedRoute>} />
           <Route path="/check" element={<ProtectedRoute><CameraCheck /></ProtectedRoute>} />
-          <Route path="/interview" element={<ProtectedRoute><Interview /></ProtectedRoute>} />
+          <Route path="/interview" element={<ProtectedRoute><ErrorBoundary><Interview /></ErrorBoundary></ProtectedRoute>} />
           <Route path="/processing" element={<ProtectedRoute><Processing /></ProtectedRoute>} />
           <Route path="/report/:answerId" element={<ProtectedRoute><FeedbackReport /></ProtectedRoute>} />
           <Route path="/session-complete" element={<ProtectedRoute><SessionComplete /></ProtectedRoute>} />

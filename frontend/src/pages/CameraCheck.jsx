@@ -76,9 +76,33 @@ export default function CameraCheck() {
       setMicError('');
       console.log('CameraCheck: Probing hardware...');
 
-      // The simplest possible request to get permissions and "wake up" the device list
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      
+      let stream;
+      try {
+        // Attempt 1: Combined request
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      } catch (probeErr) {
+        console.warn('CameraCheck: Combined probe failed, trying split probe...', probeErr.message);
+        
+        // Attempt 2: Split request (Video first, then Audio)
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        
+        try {
+          const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          stream.addTrack(audioStream.getAudioTracks()[0]);
+        } catch (audioErr) {
+          console.warn('CameraCheck: Default audio failed, trying raw audio...', audioErr.message);
+          try {
+            // Attempt 3: Raw audio (bypasses some strict macOS CoreAudio constraints)
+            const rawAudio = await navigator.mediaDevices.getUserMedia({ 
+              audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } 
+            });
+            stream.addTrack(rawAudio.getAudioTracks()[0]);
+          } catch (rawAudioErr) {
+            throw { name: rawAudioErr.name, message: rawAudioErr.message, stream }; // Pass the video stream up for fallback
+          }
+        }
+      }
+
       if (!isCurrent) {
         stream.getTracks().forEach(t => t.stop());
         return null;
@@ -92,10 +116,11 @@ export default function CameraCheck() {
       setCameraReady(true);
       setupMicAnalyser(stream);
       return stream;
+
     } catch (e) {
-      console.warn('CameraCheck: Combined probe failed, trying Video only...', e.message);
-      try {
-        const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // If we made it here with a video `stream` object attached to the error, video works but audio totally failed.
+      if (e.stream) {
+        const videoStream = e.stream;
         if (!isCurrent) {
           videoStream.getTracks().forEach(t => t.stop());
           return null;
@@ -103,14 +128,15 @@ export default function CameraCheck() {
         streamRef.current = videoStream;
         if (videoRef.current) videoRef.current.srcObject = videoStream;
         setCameraReady(true);
-        setMicError('Microphone access denied or not found. Using video only.');
+        setMicError(`Microphone access failed: ${e.name} - ${e.message}. Using video only.`);
         return videoStream;
-      } catch (videoErr) {
-        if (isCurrent) {
-          setError(`Hardware access failed: ${videoErr.message}`);
-        }
-        return null;
       }
+
+      // If video ALSO failed
+      if (isCurrent) {
+        setError(`Hardware access failed: ${e.message}`);
+      }
+      return null;
     }
   };
 

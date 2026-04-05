@@ -236,9 +236,11 @@ def seed():
         
         # Clear existing data to prevent foreign key errors
         # (Must delete Answers and Sessions before Questions)
-        print("Cleaning up old test data...")
-        db.query(models.Answer).delete()
-        db.query(models.Session).delete()
+        # 🛡️ SAFE MODE: We no longer wipe your personal results!
+        # Only cleanup once if you truly want to reset the whole system.
+        # print("Cleaning up old test data...")
+        # db.query(models.Answer).delete()
+        # db.query(models.Session).delete()
         db.query(models.Question).delete()
         
         count = 0

@@ -29,7 +29,14 @@ else:
 # Add SSL for Cloud DBs (TiDB Cloud requires it)
 connect_args = {}
 if "tidb" in DATABASE_URL.lower() or os.getenv("DB_SSL") == "true":
-    connect_args = {"ssl": {"ca": "/etc/ssl/cert.pem"}} # Standard path on Render
+    # Try common SSL CA paths for different Linux distributions
+    ca_paths = [
+        "/etc/ssl/cert.pem",                     # Render / Alpine / Generic
+        "/etc/ssl/certs/ca-certificates.crt",    # Ubuntu / Debian
+        "/etc/pki/tls/certs/ca-bundle.crt"       # CentOS / RHEL
+    ]
+    ca_path = next((p for p in ca_paths if os.path.exists(p)), ca_paths[0])
+    connect_args = {"ssl": {"ca": ca_path}}
 
 engine = create_engine(
     DATABASE_URL, 

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { Check, Info, ChevronRight, Search, X } from 'lucide-react';
 import './Setup.css';
@@ -24,7 +25,14 @@ const COMPANIES = [
 ];
 
 export default function Setup() {
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && !user.has_api_key) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [selectedRole, setSelectedRole] = useState('');
   const [searchTerm, setSearchTerm] = useState('');

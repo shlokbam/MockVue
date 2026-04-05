@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import * as faceapi from 'face-api.js';
 import Navbar from '../components/Navbar';
-import { Camera, Mic, Eye, Lightbulb, CameraOff, ChevronRight, Check, Settings } from 'lucide-react';
+import { Camera, Mic, Eye, Lightbulb, CameraOff, ChevronRight, Check, Settings, ShieldCheck, AlertCircle } from 'lucide-react';
 import './CameraCheck.css';
 
 export default function CameraCheck() {
+  const { user, verifyStoredApiKey } = useAuth();
   const navigate = useNavigate();
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -19,6 +21,9 @@ export default function CameraCheck() {
   const [micLevel, setMicLevel] = useState(0);
   const [error, setError] = useState('');
   const [micError, setMicError] = useState('');
+  const [apiKeyReady, setApiKeyReady] = useState(false);
+  const [apiKeyLoading, setApiKeyLoading] = useState(true);
+  const [apiError, setApiError] = useState('');
 
   // Device Selection State
   const [devices, setDevices] = useState([]);
@@ -29,7 +34,10 @@ export default function CameraCheck() {
     let isCurrent = true;
 
     const init = async () => {
-      // Step 1: Probe for basic permissions (PROBE FIRST)
+      // Step 1: Prove API Key
+      await checkAIActivation(isCurrent);
+
+      // Step 2: Probe for basic permissions (PROBE FIRST)
       const stream = await probeHardware(isCurrent);
       if (!isCurrent || !stream) return;
 
@@ -276,6 +284,33 @@ export default function CameraCheck() {
     }
   };
 
+  const checkAIActivation = async (isCurrent = true) => {
+    if (!user?.has_api_key) {
+      if (isCurrent) {
+        setApiKeyReady(false);
+        setApiKeyLoading(false);
+        setApiError('No API Key found. Please set one in your profile.');
+      }
+      return;
+    }
+
+    try {
+      if (isCurrent) setApiKeyLoading(true);
+      await verifyStoredApiKey();
+      if (isCurrent) {
+        setApiKeyReady(true);
+        setApiError('');
+      }
+    } catch (err) {
+      if (isCurrent) {
+        setApiKeyReady(false);
+        setApiError('AI Evaluator Offline: Invalid key or quota limit.');
+      }
+    } finally {
+      if (isCurrent) setApiKeyLoading(false);
+    }
+  };
+
   const handleStart = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
@@ -284,7 +319,7 @@ export default function CameraCheck() {
     navigate('/interview');
   };
 
-  const canStart = cameraReady && modelsReady;
+  const canStart = cameraReady && modelsReady && apiKeyReady;
 
   const videoMics = devices.filter(d => d.kind === 'videoinput');
   const audioMics = devices.filter(d => d.kind === 'audioinput');
@@ -419,6 +454,26 @@ export default function CameraCheck() {
                    <div className="check-sub">{modelsReady ? 'Tracking active' : 'Loading models...'}</div>
                  </div>
                </div>
+            </div>
+
+            <div className={`check-card glass ${apiKeyReady ? 'done' : ''}`}>
+               <div className="check-item-head">
+                 <div className={`check-indicator ${apiKeyReady ? 'ready' : apiKeyLoading ? 'waiting' : 'error'}`}>
+                    {apiKeyReady ? <Check size={14} strokeWidth={2.5} /> : apiKeyLoading ? <ShieldCheck size={14} /> : <AlertCircle size={14} />}
+                 </div>
+                 <div className="check-label-group">
+                   <div className="check-label">AI Evaluator</div>
+                   <div className="check-sub">
+                     {apiKeyLoading ? 'Connecting to Groq AI...' : apiKeyReady ? 'AI Activated' : 'Activation failed'}
+                   </div>
+                 </div>
+               </div>
+               {apiError && (
+                 <div className="check-card-footer">
+                   <p className="check-error-txt">{apiError}</p>
+                   <Link to="/profile" className="link-btn text-xs">Fix in Profile →</Link>
+                 </div>
+               )}
             </div>
 
             <div className="check-tips glass">

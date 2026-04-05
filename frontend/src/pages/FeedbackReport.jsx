@@ -217,11 +217,20 @@ export default function FeedbackReport() {
       <div className="report-wrap">
         {/* Question header */}
         <div className="report-nav-header animate-fadeInUp">
-          <div className="report-breadcrumb" onClick={handleBackToSummary}>
-            ← Back to Session Summary
-          </div>
+          {!isLiveSession && (
+            <div className="report-breadcrumb" onClick={handleBackToSummary}>
+              ← Back to Session Summary
+            </div>
+          )}
           <div className="report-question-header glass animate-fadeInUp">
-            <div className="report-q-label">Question focus</div>
+            <div className="report-q-meta">
+              <span className="report-q-label">Question focus</span>
+              <span className="report-q-date">
+                {new Date(answer.created_at.endsWith('Z') ? answer.created_at : answer.created_at + 'Z').toLocaleString('en-IN', {
+                  day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true
+                })}
+              </span>
+            </div>
             <div className="report-q-text">"{answer.question_text}"</div>
           </div>
         </div>

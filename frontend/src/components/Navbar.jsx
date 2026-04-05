@@ -40,6 +40,9 @@ export default function Navbar() {
                 {user?.name?.split(' ')?.[0] ?? 'there'}
               </span>
             </div>
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/profile')}>
+              Profile
+            </button>
             <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
               Sign out
             </button>

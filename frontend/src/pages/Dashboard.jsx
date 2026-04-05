@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import { Target, Plus, TrendingUp, Trash2, Search, ChevronDown } from 'lucide-react';
 import ConfirmModal from '../components/ConfirmModal';
+import ApiKeyOverlay from '../components/ApiKeyOverlay';
 import './Dashboard.css';
 
 const CustomTooltip = ({ active, payload }) => {
@@ -99,6 +100,7 @@ export default function Dashboard() {
     <div className="page">
       <div className="mesh-bg" />
       <Navbar />
+      <ApiKeyOverlay />
 
       <div className="dashboard-wrap">
         {/* Header */}
@@ -273,8 +275,8 @@ export default function Dashboard() {
                         <div className="session-meta">
                           <span className="chip">{s.role}</span>
                           <span className="session-date">
-                            {new Date(s.date.endsWith('Z') ? s.date : s.date + 'Z').toLocaleDateString('en-IN', {
-                              day: 'numeric', month: 'short', year: 'numeric'
+                            {new Date(s.date.endsWith('Z') ? s.date : s.date + 'Z').toLocaleString('en-IN', {
+                              day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true
                             })}
                           </span>
                         </div>

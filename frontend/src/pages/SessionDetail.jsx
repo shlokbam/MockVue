@@ -55,8 +55,8 @@ export default function SessionDetail() {
 
   if (!session) return null;
 
-  const dateStr = new Date(session.date.endsWith('Z') ? session.date : session.date + 'Z').toLocaleDateString('en-IN', {
-    day: 'numeric', month: 'long', year: 'numeric'
+  const dateStr = new Date(session.date.endsWith('Z') ? session.date : session.date + 'Z').toLocaleString('en-IN', {
+    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true
   });
 
   const getScoreColor = (s) => (s >= 75 ? 'var(--success)' : s >= 50 ? 'var(--warning)' : 'var(--danger)');

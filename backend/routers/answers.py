@@ -46,8 +46,8 @@ def compute_eye_contact_score(gaze_percentage: float) -> float:
     return round(min(30.0, gaze_percentage * 0.3), 1)
 
 
-def call_groq(question_text: str, rubric: list, transcript: str) -> dict:
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+def call_groq(question_text: str, rubric: list, transcript: str, api_key: str) -> dict:
+    client = Groq(api_key=api_key)
 
     rubric_text = "\n".join(
         f"- {r['point']} (worth {r['points']} points)" for r in rubric
@@ -119,12 +119,12 @@ def submit_answer(
     # Process audio if provided
     if audio:
         try:
-            client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+            client = Groq(api_key=current_user.groq_api_key)
             audio_data = audio.file.read()
             filename = audio.filename or "recording.webm"
             # Some platforms might pass an empty file, check size
             if len(audio_data) > 0:
-                transcription = client.audio.transcriptions.create(
+                transcription = client.audio.translations.create(
                     file=(filename, audio_data),
                     model="whisper-large-v3-turbo",
                     response_format="verbose_json"
@@ -194,7 +194,8 @@ def submit_answer(
     groq_result = call_groq(
         question_text=question.question_text,
         rubric=question.rubric,
-        transcript=transcript
+        transcript=transcript,
+        api_key=current_user.groq_api_key
     )
 
     # Compute component scores

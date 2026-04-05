@@ -11,6 +11,7 @@ import Processing from './pages/Processing';
 import FeedbackReport from './pages/FeedbackReport';
 import SessionDetail from './pages/SessionDetail';
 import SessionComplete from './pages/SessionComplete';
+import Profile from './pages/Profile';
 import ErrorBoundary from './components/ErrorBoundary';
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/setup" element={<ProtectedRoute><Setup /></ProtectedRoute>} />
           <Route path="/check" element={<ProtectedRoute><CameraCheck /></ProtectedRoute>} />
           <Route path="/interview" element={<ProtectedRoute><ErrorBoundary><Interview /></ErrorBoundary></ProtectedRoute>} />

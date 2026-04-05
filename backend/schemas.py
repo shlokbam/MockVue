@@ -20,10 +20,39 @@ class UserOut(BaseModel):
     id: int
     name: str
     email: str
+    has_api_key: bool = False
     created_at: datetime
+
+    @classmethod
+    def from_orm(cls, obj):
+        return cls(
+            id=obj.id,
+            name=obj.name,
+            email=obj.email,
+            has_api_key=bool(obj.groq_api_key),
+            created_at=obj.created_at
+        )
 
     class Config:
         from_attributes = True
+
+
+class ProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class ApiKeyVerify(BaseModel):
+    api_key: str
+
+
+class ApiKeySave(BaseModel):
+    api_key: str
 
 
 class Token(BaseModel):

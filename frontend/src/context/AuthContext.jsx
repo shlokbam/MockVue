@@ -31,8 +31,40 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateProfile = useCallback(async (name, email) => {
+    const { data } = await api.put('/auth/profile', { name, email });
+    localStorage.setItem('mockvue_user', JSON.stringify(data));
+    setUser(data);
+    return data;
+  }, []);
+
+  const changePassword = useCallback(async (current_password, new_password) => {
+    await api.put('/auth/password', { current_password, new_password });
+  }, []);
+
+  const verifyApiKey = useCallback(async (api_key) => {
+    const { data } = await api.post('/auth/verify-api-key', { api_key });
+    return data;
+  }, []);
+
+  const verifyStoredApiKey = useCallback(async () => {
+    const { data } = await api.post('/auth/verify-stored-key');
+    return data;
+  }, []);
+
+  const saveApiKey = useCallback(async (api_key) => {
+    const { data } = await api.put('/auth/api-key', { api_key });
+    localStorage.setItem('mockvue_user', JSON.stringify(data));
+    setUser(data);
+    return data;
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ 
+      user, login, register, logout, 
+      updateProfile, changePassword, verifyApiKey, verifyStoredApiKey, saveApiKey,
+      isAuthenticated: !!user 
+    }}>
       {children}
     </AuthContext.Provider>
   );

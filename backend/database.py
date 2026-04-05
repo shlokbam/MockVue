@@ -40,14 +40,16 @@ if "tidb" in DATABASE_URL.lower() or os.getenv("DB_SSL") == "true":
     ca_path = next((p for p in ca_paths if os.path.exists(p)), ca_paths[0])
     connect_args = {"ssl": {"ca": ca_path}}
 
+# Correctly place timeout inside connect_args for MySQL/PyMySQL
+connect_args["connect_timeout"] = 10
+
 print(f"Connecting to: {DATABASE_URL.split('@')[-1]}") # Log host (safe) 
 
 engine = create_engine(
     DATABASE_URL, 
     pool_pre_ping=True, 
     echo=False,
-    connect_args=connect_args,
-    connect_timeout=10 # High-speed timeout for cloud health checks
+    connect_args=connect_args
 )
 print("Database engine initialized successfully.")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

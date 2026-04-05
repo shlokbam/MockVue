@@ -16,7 +16,7 @@ def get_dashboard(
 ):
     sessions = db.query(models.Session).filter(
         models.Session.user_id == current_user.id,
-        models.Session.status == "complete"
+        (models.Session.status == "complete") | (models.Session.overall_score > 0)
     ).order_by(models.Session.date.asc()).all()
 
     total = len(sessions)

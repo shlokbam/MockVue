@@ -194,6 +194,13 @@ export default function FeedbackReport() {
     );
   }
 
+  const mvSession = JSON.parse(sessionStorage.getItem('mv_session') || 'null');
+  const isLiveSession = mvSession && mvSession.id === answer?.session_id && sessionStorage.getItem('mv_questions');
+
+  const handleBackToSummary = () => {
+    navigate(`/session/${answer?.session_id}`);
+  };
+
   const groq = answer.groq_feedback || {};
   const rubricScores = groq.rubric_scores || [];
   const totalScore = (answer.answer_score || 0) + (answer.confidence_score || 0) + (answer.eye_contact_score || 0);
@@ -209,7 +216,7 @@ export default function FeedbackReport() {
       <div className="report-wrap">
         {/* Question header */}
         <div className="report-nav-header animate-fadeInUp">
-          <div className="report-breadcrumb" onClick={() => navigate(`/session/${answer.session_id}`)}>
+          <div className="report-breadcrumb" onClick={handleBackToSummary}>
             ← Back to Session Summary
           </div>
           <div className="report-question-header glass animate-fadeInUp">
@@ -227,9 +234,9 @@ export default function FeedbackReport() {
               className="score-summary-badge"
               style={{ borderColor: scoreColor + '40', background: scoreColor + '15', color: scoreColor }}
             >
-              {totalScore >= 75 ? '🟢 Strong performance' :
-               totalScore >= 50 ? '🟡 Needs improvement' :
-               '🔴 Significant gaps'}
+              {totalScore >= 75 ? 'Strong performance' :
+               totalScore >= 50 ? 'Needs improvement' :
+               'Significant gaps'}
             </div>
             {groq.summary && (
               <p className="overall-summary">"{groq.summary}"</p>
@@ -404,27 +411,33 @@ export default function FeedbackReport() {
                 navigate(`/report/${sessionSiblings[idx - 1].id}`);
               }}
             >
-              ← Previous Question
+              ← Previous
             </button>
             <div className="report-nav-status">
-              Question {sessionSiblings.findIndex(s => s.id === answer.id) + 1} of {Math.max(totalQuestions, sessionSiblings.length)}
+              Result {sessionSiblings.findIndex(s => s.id === answer.id) + 1} of {sessionSiblings.length}
             </div>
 
-            {/* If we're on the last answered question, but the session isn't over, show 'Continue' */}
-            {sessionSiblings.findIndex(s => s.id === answer.id) === sessionSiblings.length - 1 && sessionSiblings.length < totalQuestions ? (
-              <button className="btn btn-primary" onClick={handleNextQuestion}>
-                Continue to Next Question →
-              </button>
-            ) : (
+            {/* Navigation Button Logic */}
+            {sessionSiblings.findIndex(s => s.id === answer.id) < sessionSiblings.length - 1 ? (
+              /* If there's a next ANSWER ready, show it */
               <button 
                 className="btn btn-primary"
-                disabled={sessionSiblings.findIndex(s => s.id === answer.id) === sessionSiblings.length - 1}
                 onClick={() => {
                   const idx = sessionSiblings.findIndex(s => s.id === answer.id);
                   navigate(`/report/${sessionSiblings[idx + 1].id}`);
                 }}
               >
-                Next Question Report →
+                Next Result →
+              </button>
+            ) : isLiveSession ? (
+              /* If it's a live flow and we've run out of answers, provide the option to continue the interview */
+              <button className="btn btn-primary" onClick={handleNextQuestion}>
+                Answer Next Question →
+              </button>
+            ) : (
+              /* In archive mode, just go back to summary */
+              <button className="btn btn-primary" onClick={handleBackToSummary}>
+                Back to Summary ✓
               </button>
             )}
           </div>

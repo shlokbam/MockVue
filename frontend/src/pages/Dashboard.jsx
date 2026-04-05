@@ -4,7 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { Target, Plus, TrendingUp, Trash2 } from 'lucide-react';
+import { Target, Plus, TrendingUp, Trash2, Search, ChevronDown } from 'lucide-react';
 import ConfirmModal from '../components/ConfirmModal';
 import './Dashboard.css';
 
@@ -80,7 +80,20 @@ export default function Dashboard() {
     }
   };
 
-  const completedSessions = sessions.filter((s) => s.status === 'complete');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date-desc'); // date-desc, date-asc, score-desc, score-asc
+
+  const completedSessions = sessions.filter((s) => s.status === 'complete' || (s.overall_score > 0));
+
+  const filteredSessions = completedSessions
+    .filter((s) => s.company.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      if (sortBy === 'date-desc') return new Date(b.date) - new Date(a.date);
+      if (sortBy === 'date-asc') return new Date(a.date) - new Date(b.date);
+      if (sortBy === 'score-desc') return b.overall_score - a.overall_score;
+      if (sortBy === 'score-asc') return a.overall_score - b.overall_score;
+      return 0;
+    });
 
   return (
     <div className="page">
@@ -191,7 +204,39 @@ export default function Dashboard() {
 
             {/* Past sessions */}
             <div className="sessions-section animate-fadeInUp">
-              <h2>Past Sessions</h2>
+              <div className="sessions-header-row" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', marginBottom: '20px' }}>
+                <h2 style={{ padding: 0, margin: 0 }}>Past Sessions</h2>
+                
+                {completedSessions.length > 0 && (
+                  <div className="sessions-filters" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <div className="search-box glass" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: 40, borderRadius: 10, border: '1px solid var(--border)' }}>
+                      <Search size={16} style={{ color: 'var(--text-muted)', marginRight: 8 }} />
+                      <input 
+                        type="text" 
+                        placeholder="Search company..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 13, width: 150, outline: 'none' }}
+                      />
+                    </div>
+                    
+                    <div className="sort-box glass" style={{ display: 'flex', alignItems: 'center', padding: '0 12px', height: 40, borderRadius: 10, border: '1px solid var(--border)' }}>
+                      <select 
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        style={{ background: 'transparent', border: 'none', color: '#6366f1', fontSize: 13, outline: 'none', fontWeight: 600, cursor: 'pointer', appearance: 'none', WebkitAppearance: 'none' }}
+                      >
+                        <option value="date-desc" style={{ background: '#111', color: '#fff' }}>Latest</option>
+                        <option value="date-asc" style={{ background: '#111', color: '#fff' }}>Oldest</option>
+                        <option value="score-desc" style={{ background: '#111', color: '#fff' }}>Highest Score</option>
+                        <option value="score-asc" style={{ background: '#111', color: '#fff' }}>Lowest Score</option>
+                      </select>
+                      <ChevronDown size={14} style={{ color: 'var(--text-muted)', marginLeft: 4 }} />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {completedSessions.length === 0 ? (
                 <div className="empty-state glass">
                   <div className="empty-icon-wrap">
@@ -203,12 +248,28 @@ export default function Dashboard() {
                     Start practising
                   </button>
                 </div>
+              ) : filteredSessions.length === 0 ? (
+                <div className="empty-state glass" style={{ padding: '40px 20px' }}>
+                  <p style={{ color: 'var(--text-muted)' }}>No sessions match your search.</p>
+                  <button className="btn btn-secondary btn-sm" onClick={() => setSearchTerm('')}>Clear search</button>
+                </div>
               ) : (
                 <div className="session-list">
-                  {completedSessions.map((s, i) => (
+                  {filteredSessions.map((s, i) => (
                     <div className="session-card glass" key={s.id} style={{ animationDelay: `${i * 0.04}s` }}>
                       <div className="session-card-left">
-                        <div className="session-company">{s.company}</div>
+                        <div className="session-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                          <div className="session-company">{s.company}</div>
+                          <div className="session-monogram" style={{ 
+                            width: 32, height: 32, borderRadius: 8, 
+                            background: 'var(--accent-gradient)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 14, fontWeight: 700, color: '#fff',
+                            boxShadow: 'var(--shadow-glow)'
+                          }}>
+                            {s.company.charAt(0)}
+                          </div>
+                        </div>
                         <div className="session-meta">
                           <span className="chip">{s.role}</span>
                           <span className="session-date">
@@ -218,7 +279,7 @@ export default function Dashboard() {
                           </span>
                         </div>
                       </div>
-                      <div className="session-card-right">
+                      <div className="session-card-right" style={{ marginTop: 12 }}>
                         <div
                           className="session-score"
                           style={{ color: ScoreColor(s.overall_score) }}
@@ -229,8 +290,9 @@ export default function Dashboard() {
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleViewSession(s.id)}
+                            style={{ height: 38, padding: '0 16px' }}
                           >
-                            View report
+                            View
                           </button>
                           <button
                             className="btn-delete-icon"

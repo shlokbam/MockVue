@@ -340,13 +340,32 @@ export default function Interview() {
       gazeFramesRef.current.total++;
 
       try {
+        // We use face landmarks to detect 'honest' eye contact (head pose)
         const detection = await faceapi.detectSingleFace(
           video,
-          new faceapi.TinyFaceDetectorOptions({ inputSize: 256, scoreThreshold: 0.1 })
-        );
+          new faceapi.TinyFaceDetectorOptions({ inputSize: 256, scoreThreshold: 0.2 })
+        ).withFaceLandmarks(true);
 
-        if (detection && detection.score > 0.1) {
-          gazeFramesRef.current.looking++;
+        if (detection) {
+          const landmarks = detection.landmarks;
+          const nose = landmarks.getNose();
+          const leftEye = landmarks.getLeftEye();
+          const rightEye = landmarks.getRightEye();
+
+          if (nose.length > 0 && leftEye.length > 0 && rightEye.length > 0) {
+            // Heuristic: Nose bridge should be roughly centered between the eyes for a frontal face
+            const eyeSpan = rightEye[3].x - leftEye[0].x;
+            const noseOffset = nose[0].x - leftEye[0].x;
+            const ratio = noseOffset / eyeSpan;
+
+            // Ratio 0.5 is perfectly centered. We allow 0.35 - 0.65 for conversational gaze.
+            const isFrontal = ratio > 0.35 && ratio < 0.65;
+            
+            // Optional: check vertical tilt if needed, but horizontal is most common
+            if (isFrontal && detection.detection.score > 0.2) {
+              gazeFramesRef.current.looking++;
+            }
+          }
         }
       } catch (e) {
         // Silently skip frame

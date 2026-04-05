@@ -127,97 +127,106 @@
 .sessions-section h2 {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   letter-spacing: -0.02em;
   padding-top: 30px;
 }
 
 .session-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
 }
 
 .session-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 22px;
+  flex-direction: column;
+  padding: 24px;
   gap: 20px;
   transition: var(--transition);
   animation: fadeInUp 0.35s ease both;
+  min-height: 200px;
+  justify-content: space-between;
 }
 
 .session-card:hover {
-  transform: translateX(3px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow);
 }
 
 .session-card-left {
-  flex: 1;
+  width: 100%;
 }
 
 .session-company {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  letter-spacing: -0.01em;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .session-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .session-date {
   font-size: 12px;
   color: var(--text-muted);
+  font-weight: 500;
+  margin-left: 2px;
 }
 
 .session-card-right {
   display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .session-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .btn-delete-icon {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-sm);
-  background: transparent;
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--text-muted);
   cursor: pointer;
   transition: var(--transition);
 }
 
 .btn-delete-icon:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.015);
   border-color: rgba(239, 68, 68, 0.2);
   color: var(--danger);
+  transform: scale(1.05);
 }
 
 .session-score {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
   line-height: 1;
 }
 
 .session-score span {
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text-muted);
+  margin-left: 1px;
 }
 
 /* ── Empty State ──────────────────────────────────────────────────────────── */

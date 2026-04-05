@@ -220,6 +220,17 @@ def submit_answer(
         groq_feedback=groq_result
     )
     db.add(answer)
+    db.flush() # Ensure answer is visible to query before recalculation
+    
+    # NEW: Recalculate and update the session's overall score in real-time
+    answers = db.query(models.Answer).filter(models.Answer.session_id == session_id).all()
+    if answers:
+        total = sum(
+            (a.answer_score or 0) + (a.confidence_score or 0) + (a.eye_contact_score or 0)
+            for a in answers
+        )
+        session.overall_score = round(total / len(answers), 1)
+
     db.commit()
     db.refresh(answer)
     return answer

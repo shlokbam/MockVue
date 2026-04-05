@@ -6,46 +6,44 @@ import api from '../services/api';
 import { Check, Info, ChevronRight, Search, X } from 'lucide-react';
 import './Setup.css';
 
-const COMPANIES = [
-  { id: 'Google', name: 'Google', monogram: 'GO', color: '#4285F4', logo: 'https://logo.clearbit.com/google.com', roles: ['Software Engineer', 'Data Scientist', 'Product Manager'] },
-  { id: 'Amazon', name: 'Amazon', monogram: 'AM', color: '#FF9900', logo: 'https://logo.clearbit.com/amazon.com', roles: ['Software Engineer', 'SDE-II', 'QA Engineer'] },
-  { id: 'Microsoft', name: 'Microsoft', monogram: 'MS', color: '#00A4EF', logo: 'https://logo.clearbit.com/microsoft.com', roles: ['Software Engineer', 'Program Manager'] },
-  { id: 'Meta', name: 'Meta', monogram: 'ME', color: '#0668E1', logo: 'https://logo.clearbit.com/meta.com', roles: ['Software Engineer', 'Data Engineer'] },
-  { id: 'Apple', name: 'Apple', monogram: 'AP', color: '#A2AAAD', logo: 'https://logo.clearbit.com/apple.com', roles: ['Software Engineer', 'Hardware Engineer'] },
-  { id: 'Netflix', name: 'Netflix', monogram: 'NX', color: '#E50914', logo: 'https://logo.clearbit.com/netflix.com', roles: ['Software Engineer', 'UI Engineer'] },
-  { id: 'JPMorgan', name: 'JPMorgan Chase', monogram: 'JP', color: '#3b82f6', logo: 'https://logo.clearbit.com/jpmorganchase.com', roles: ['Software Engineer', 'Business Analyst'] },
-  { id: 'Goldman Sachs', name: 'Goldman Sachs', monogram: 'GS', color: '#10b981', logo: 'https://logo.clearbit.com/goldmansachs.com', roles: ['Software Engineer'] },
-  { id: 'Salesforce', name: 'Salesforce', monogram: 'SF', color: '#00A1E0', logo: 'https://logo.clearbit.com/salesforce.com', roles: ['Software Engineer', 'Sales Engineer'] },
-  { id: 'Adobe', name: 'Adobe', monogram: 'AD', color: '#FF0000', logo: 'https://logo.clearbit.com/adobe.com', roles: ['Software Engineer', 'Experience Designer'] },
-  { id: 'Uber', name: 'Uber', monogram: 'UB', color: '#333333', logo: 'https://logo.clearbit.com/uber.com', roles: ['Software Engineer', 'Backend Engineer'] },
-  { id: 'Airbnb', name: 'Airbnb', monogram: 'AB', color: '#FF5A5F', logo: 'https://logo.clearbit.com/airbnb.com', roles: ['Software Engineer', 'Data Analyst'] },
-  { id: 'TCS', name: 'Tata Consultancy', monogram: 'TC', color: '#8b5cf6', logo: 'https://logo.clearbit.com/tcs.com', roles: ['Software Engineer'] },
-  { id: 'Infosys', name: 'Infosys', monogram: 'IN', color: '#f59e0b', logo: 'https://logo.clearbit.com/infosys.com', roles: ['Software Engineer'] },
-  { id: 'General HR', name: 'General HR', monogram: 'HR', color: '#6366f1', logo: null, roles: ['General'] },
-];
-
 export default function Setup() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedRole, setSelectedRole] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchMetadata() {
+      try {
+        const { data } = await api.get('/questions/metadata');
+        setCompanies(data);
+      } catch (err) {
+        console.error("Failed to fetch company metadata", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMetadata();
+  }, []);
 
   useEffect(() => {
     if (user && !user.has_api_key) {
       navigate('/dashboard');
     }
   }, [user, navigate]);
-  const [selectedCompany, setSelectedCompany] = useState(null);
-  const [selectedRole, setSelectedRole] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const filteredCompanies = COMPANIES.filter(c =>
+  const filteredCompanies = companies.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     c.monogram.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleBegin = async () => {
     if (!selectedCompany || !selectedRole) return;
-    setLoading(true);
+    setActionLoading(true);
     try {
       const { data: session } = await api.post('/sessions', {
         company: selectedCompany.id,
@@ -65,7 +63,7 @@ export default function Setup() {
       console.error(e);
       alert('Could not load questions. Check backend is running.');
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -100,7 +98,12 @@ export default function Setup() {
             </div>
           </div>
 
-          {filteredCompanies.length > 0 ? (
+          {loading ? (
+             <div className="loading-state glass">
+                <span className="spinner" />
+                <p>Loading available interviews...</p>
+             </div>
+          ) : filteredCompanies.length > 0 ? (
             <div className="company-grid">
               {filteredCompanies.map((c, i) => (
                 <button
@@ -178,9 +181,9 @@ export default function Setup() {
               id="begin-interview"
               className="btn btn-primary btn-lg"
               onClick={handleBegin}
-              disabled={loading}
+              disabled={actionLoading}
             >
-              {loading ? <span className="spinner" /> : <>Begin Interview <ChevronRight size={16} /></>}
+              {actionLoading ? <span className="spinner" /> : <>Begin Interview <ChevronRight size={16} /></>}
             </button>
           </div>
         )}

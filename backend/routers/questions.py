@@ -33,3 +33,42 @@ def get_questions(
     random.shuffle(questions)
     return questions[:5]
 
+@router.get("/metadata")
+def get_question_metadata(db: Session = Depends(get_db)):
+    """
+    Returns a unique list of companies and their roles for the setup page.
+    """
+    results = db.query(models.Question.company, models.Question.role).distinct().all()
+    
+    metadata = {}
+    for company, role in results:
+        if company not in metadata:
+            metadata[company] = []
+        if role not in metadata[company]:
+            metadata[company].append(role)
+            
+    # Convert to a list of dicts for the frontend
+    # Add some basic branding logic (logo/color) based on the company name
+    formatted = []
+    for company, roles in metadata.items():
+        # Heuristic for color/monogram
+        monogram = "".join([w[0] for w in company.split()[:2]]).upper()
+        
+        # Consistent color based on name
+        import hashlib
+        color_hex = "#" + hashlib.md5(company.encode()).hexdigest()[:6]
+        
+        # Clearbit logo (optional)
+        domain = company.lower().replace(" ", "") + ".com"
+        logo = f"https://logo.clearbit.com/{domain}" if company != "General HR" else None
+        
+        formatted.append({
+            "id": company,
+            "name": company,
+            "monogram": monogram,
+            "color": color_hex,
+            "logo": logo,
+            "roles": roles
+        })
+        
+    return formatted

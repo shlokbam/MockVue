@@ -528,9 +528,10 @@ export default function Interview() {
       {/* ── Progress bar ──────────────────────────────────────────────────── */}
       <div className="progress-bar-wrap" style={{ borderRadius: 0 }}>
         <div
-          className="progress-bar-fill"
+          key={phase}
+          className="progress-bar-fill animate-progress"
           style={{
-            width: `${phase === 'reading' ? readProgress : recProgress}%`,
+            '--duration': `${phase === 'reading' ? READ_TIME : RECORD_TIME}s`,
             background: phase === 'reading' ? 'var(--accent-gradient)' : 'linear-gradient(90deg, var(--danger) 0%, var(--warning) 100%)',
           }}
         />

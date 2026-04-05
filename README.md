@@ -1,12 +1,12 @@
 # MockVue 🎥
 
-> Practice HireVue-style AI video interviews and get instant feedback on what you said, how you said it, and your eye contact.
+> Master AI-powered video interviews and get instant feedback on what you said, how you said it, and your eye contact.
 
 ---
 
 ## What is MockVue?
 
-Companies like JPMorgan, Goldman Sachs, and TCS use HireVue for first-round interviews. MockVue gives students unlimited free practice with AI-powered feedback on:
+Companies like JPMorgan, Goldman Sachs, and TCS use AI-powered video assessments for first-round interviews. MockVue gives students unlimited free practice with AI-powered feedback on:
 
 - **Answer Quality (40pts)** — Did you hit the rubric points? Scored by Groq (Llama 3.3 70B)
 - **Confidence (30pts)** — Filler words, speaking pace (WPM), long pauses

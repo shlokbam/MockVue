@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../services/api';
 import './FeedbackReport.css';
@@ -12,8 +12,8 @@ function ScoreRing({ score, max = 100, size = 160 }) {
 
   const color =
     score >= 75 ? '#10b981' :
-    score >= 50 ? '#f59e0b' :
-    '#ef4444';
+      score >= 50 ? '#f59e0b' :
+        '#ef4444';
 
   return (
     <div className="score-ring-wrap" style={{ width: size, height: size }}>
@@ -45,11 +45,11 @@ function ProgressBar({ value, max, color }) {
 }
 
 const QUALITY_WORDS = [
-  'team', 'growth', 'challenge', 'results', 'impact', 
-  'framework', 'strategy', 'develop', 'developed', 'lead', 'led', 
-  'managed', 'improve', 'improved', 'achieve', 'achieved', 
+  'team', 'growth', 'challenge', 'results', 'impact',
+  'framework', 'strategy', 'develop', 'developed', 'lead', 'led',
+  'managed', 'improve', 'improved', 'achieve', 'achieved',
   'tcs', 'technology', 'technologies', 'leadership', 'communicate',
-  'scalable', 'deploy', 'collaborate', 'collaborated', 'agile', 
+  'scalable', 'deploy', 'collaborate', 'collaborated', 'agile',
   'learning', 'learn', 'metrics', 'optimize', 'optimized',
   'giant', 'project', 'sector', 'india', 'future', 'server', 'ai'
 ];
@@ -57,7 +57,7 @@ const QUALITY_WORDS = [
 function highlightTranscript(text, breakdown) {
   if (!text) return text;
   let result = text;
-  
+
   // Highlight filler words (amber)
   if (breakdown) {
     Object.keys(breakdown).forEach((fw) => {
@@ -194,8 +194,9 @@ export default function FeedbackReport() {
     );
   }
 
+  const location = useLocation();
   const mvSession = JSON.parse(sessionStorage.getItem('mv_session') || 'null');
-  const isLiveSession = mvSession && mvSession.id === answer?.session_id && sessionStorage.getItem('mv_questions');
+  const isLiveSession = location.state?.isLive === true && mvSession && mvSession.id === answer?.session_id;
 
   const handleBackToSummary = () => {
     navigate(`/session/${answer?.session_id}`);
@@ -235,8 +236,8 @@ export default function FeedbackReport() {
               style={{ borderColor: scoreColor + '40', background: scoreColor + '15', color: scoreColor }}
             >
               {totalScore >= 75 ? 'Strong performance' :
-               totalScore >= 50 ? 'Needs improvement' :
-               'Significant gaps'}
+                totalScore >= 50 ? 'Needs improvement' :
+                  'Significant gaps'}
             </div>
             {groq.summary && (
               <p className="overall-summary">"{groq.summary}"</p>
@@ -307,8 +308,8 @@ export default function FeedbackReport() {
                   {answer.filler_word_count === 0
                     ? '✓ Excellent! No filler words detected.'
                     : answer.filler_word_count <= 5
-                    ? `✓ Good — aim for under 5. You used: ${Object.entries(fillerBreakdown).map(([k,v]) => `"${k}" ×${v}`).join(', ')}.`
-                    : `⚠️ High count — aim for under 5. You said: ${Object.entries(fillerBreakdown).map(([k,v]) => `"${k}" ×${v}`).join(', ')}.`
+                      ? `✓ Good — aim for under 5. You used: ${Object.entries(fillerBreakdown).map(([k, v]) => `"${k}" ×${v}`).join(', ')}.`
+                      : `⚠️ High count — aim for under 5. You said: ${Object.entries(fillerBreakdown).map(([k, v]) => `"${k}" ×${v}`).join(', ')}.`
                   }
                 </div>
               </div>
@@ -329,8 +330,8 @@ export default function FeedbackReport() {
                   {answer.pause_count === 0
                     ? '✓ Great flow — no long silences.'
                     : answer.pause_count <= 2
-                    ? '✓ Short pauses are fine — they show composure.'
-                    : '⚠️ Silences over 3s can hurt your score. Practise bridging with filler-free transitions.'}
+                      ? '✓ Short pauses are fine — they show composure.'
+                      : '⚠️ Silences over 3s can hurt your score. Practise bridging with filler-free transitions.'}
                 </div>
               </div>
             </div>
@@ -378,7 +379,7 @@ export default function FeedbackReport() {
             <h2>📝 Your Transcript</h2>
             {answer.transcript ? (
               <span className="ts-note">
-                <span style={{ color: 'var(--warning)' }}>■</span> Filler words 
+                <span style={{ color: 'var(--warning)' }}>■</span> Filler words
                 <span style={{ marginLeft: 12, color: 'var(--success)' }}>■</span> Quality words
               </span>
             ) : (
@@ -403,8 +404,8 @@ export default function FeedbackReport() {
         {/* ── Actions ─────────────────────────────────────────────────────────── */}
         <div className="report-actions animate-fadeInUp">
           <div className="report-nav-group">
-            <button 
-              className="btn btn-secondary" 
+            <button
+              className="btn btn-secondary"
               disabled={sessionSiblings.findIndex(s => s.id === answer.id) === 0}
               onClick={() => {
                 const idx = sessionSiblings.findIndex(s => s.id === answer.id);
@@ -420,7 +421,7 @@ export default function FeedbackReport() {
             {/* Navigation Button Logic */}
             {sessionSiblings.findIndex(s => s.id === answer.id) < sessionSiblings.length - 1 ? (
               /* If there's a next ANSWER ready, show it */
-              <button 
+              <button
                 className="btn btn-primary"
                 onClick={() => {
                   const idx = sessionSiblings.findIndex(s => s.id === answer.id);
@@ -437,11 +438,11 @@ export default function FeedbackReport() {
             ) : (
               /* In archive mode, just go back to summary */
               <button className="btn btn-primary" onClick={handleBackToSummary}>
-                Back to Summary ✓
+                Back to Summary
               </button>
             )}
           </div>
-          
+
           <button className="btn btn-ghost" onClick={() => navigate('/dashboard')}>
             Exit to Dashboard
           </button>

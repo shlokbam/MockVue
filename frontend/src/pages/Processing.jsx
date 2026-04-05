@@ -87,7 +87,7 @@ export default function Processing() {
       await new Promise((res) => setTimeout(res, 6500));
 
       if (isMountedRef.current) {
-        navigate(`/report/${answer.id}`);
+        navigate(`/report/${answer.id}`, { state: { isLive: true } });
       }
     } catch (e) {
       if (isMountedRef.current) {

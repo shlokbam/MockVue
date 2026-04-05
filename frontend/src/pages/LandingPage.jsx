@@ -20,8 +20,8 @@ const FEATURES = [
         <path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.9L15 14v-4z"/><rect x="2" y="6" width="13" height="12" rx="2"/>
       </svg>
     ),
-    title: 'Record Under Real Conditions',
-    desc: '30 seconds to read, 2 minutes to respond — exactly like HireVue.',
+    title: 'Expert Interview Conditions',
+    desc: '30 seconds to read, 2 minutes to respond — exactly like the real assessment.',
   },
   {
     icon: (
@@ -96,12 +96,12 @@ export default function LandingPage() {
             Free — No credit card required
           </div>
           <h1 className="hero-title">
-            Practice HireVue<br />
+            Master your AI Interview<br />
             <span className="gradient-text">before the real thing.</span>
           </h1>
           <p className="hero-subtitle">
-            Companies like JPMorgan, Goldman Sachs, and TCS use HireVue for first-round
-            interviews. Most students go in blind. MockVue changes that.
+            Companies like JPMorgan, Goldman Sachs, and TCS use AI-powered video 
+            assessments for first-round interviews. MockVue helps you master them.
           </p>
 
           <div className="features-row">

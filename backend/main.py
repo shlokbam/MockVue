@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 import models
-from routers import auth, questions, sessions, answers, dashboard
+from routers import auth, questions, sessions, answers, dashboard, feedback
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
@@ -22,6 +22,7 @@ app.include_router(questions.router)
 app.include_router(sessions.router)
 app.include_router(answers.router)
 app.include_router(dashboard.router)
+app.include_router(feedback.router)
 
 
 @app.get("/")

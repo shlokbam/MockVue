@@ -75,3 +75,16 @@ class Answer(Base):
     @property
     def question_text(self):
         return self.question.question_text if self.question else ""
+
+
+class Feedback(Base) :
+    __tablename__ = "feedback"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    category = Column(String(50), nullable=False)  # Bug, Feature, Review, etc.
+    subject = Column(String(200), nullable=False)
+    message = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User")

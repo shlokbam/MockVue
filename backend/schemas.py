@@ -160,3 +160,23 @@ class DashboardOut(BaseModel):
     total_sessions: int
     average_score: float
     score_trend: List[ScoreTrendPoint]
+
+
+# ─── Feedback ────────────────────────────────────────────────────────────────
+
+class FeedbackCreate(BaseModel):
+    category: str
+    subject: str
+    message: str
+
+
+class FeedbackOut(BaseModel):
+    id: int
+    user_id: int
+    category: str
+    subject: str
+    message: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

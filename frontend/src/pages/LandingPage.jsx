@@ -8,7 +8,7 @@ const FEATURES = [
   {
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
       </svg>
     ),
     title: 'Company-Specific Questions',
@@ -17,7 +17,7 @@ const FEATURES = [
   {
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.9L15 14v-4z"/><rect x="2" y="6" width="13" height="12" rx="2"/>
+        <path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.9L15 14v-4z" /><rect x="2" y="6" width="13" height="12" rx="2" />
       </svg>
     ),
     title: 'Expert Interview Conditions',
@@ -26,12 +26,35 @@ const FEATURES = [
   {
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
       </svg>
     ),
     title: 'AI-Powered Feedback',
     desc: 'Instant scores on content quality, speaking pace, and eye contact.',
   },
+];
+
+const GUIDE_STEPS = [
+  {
+    num: '01',
+    title: 'Create Account',
+    desc: 'Sign up free to track your practice history and trends.'
+  },
+  {
+    num: '02',
+    title: 'Activate AI',
+    desc: 'Paste your Groq API key in your profile to power evaluations.'
+  },
+  {
+    num: '03',
+    title: 'Pick a Company',
+    desc: 'Choose from JPMorgan, Goldman Sachs, or TCS-specific roles.'
+  },
+  {
+    num: '04',
+    title: 'Practice & Improve',
+    desc: 'Complete the 5-question mock and get your AI report.'
+  }
 ];
 
 export default function LandingPage() {
@@ -100,7 +123,7 @@ export default function LandingPage() {
             <span className="gradient-text">before the real thing.</span>
           </h1>
           <p className="hero-subtitle">
-            Companies like JPMorgan, Goldman Sachs, and TCS use AI-powered video 
+            Companies like JPMorgan, Goldman Sachs, and TCS use AI-powered video
             assessments for first-round interviews. MockVue helps you master them.
           </p>
 
@@ -209,8 +232,38 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* How it Works */}
+      <section className="how-it-works extrapad container animate-fadeIn">
+        <div className="section-head">
+          <span className="section-sub">Process</span>
+          <h2>How MockVue Works</h2>
+        </div>
+        <div className="guide-grid">
+          {GUIDE_STEPS.map((s, i) => (
+            <div className="guide-step" key={i}>
+              <div className="guide-num">{s.num}</div>
+              <div className="guide-content">
+                <h3>{s.title}</h3>
+                <p>{s.desc}</p>
+              </div>
+              {i < GUIDE_STEPS.length - 1 && <div className="guide-line" />}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Support & Disclaimer Footer */}
+      <div className="landing-support-footer">
+        <div className="container">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <p><strong>Support & Feedback:</strong> For any difficulties, bug reports, or reviews, please email us directly at <a href="mailto:shlokbam19103@gmail.com">shlokbam19103@gmail.com</a></p>
+            <p className="text-muted">Disclaimer: MockVue is an AI-powered practice platform. Feedback and scores are for guidance only.</p>
+          </div>
+        </div>
+      </div>
+
       <footer className="landing-footer">
-        MockVue &copy; 2025 &middot; Interview prep for campus placements
+        MockVue &copy; 2026 &middot; Interview prep for campus placements
       </footer>
     </div>
   );

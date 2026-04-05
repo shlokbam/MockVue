@@ -12,7 +12,7 @@ DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_NAME = os.getenv("DB_NAME", "mockvue")
 
-# Use 127.0.0.1 to force TCP (avoids socket issues with XAMPP)
+# Use localhost/127.0.0.1 for local MySQL
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@127.0.0.1:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, echo=False)

@@ -1,0 +1,134 @@
+.server-status-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 10000; /* Ensure it stays above everything */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.server-status-card {
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.05); /* Darker glass for better contrast */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 35px 25px;
+  text-align: center;
+  border-radius: 20px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+}
+
+.server-status-icon-wrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cloud-icon {
+  position: absolute;
+  color: var(--primary);
+  opacity: 0.9;
+  z-index: 2;
+}
+
+.spinner-icon {
+  position: absolute;
+  color: var(--primary);
+  opacity: 0.2;
+  animation: spin 3s linear infinite;
+}
+
+.sparkle-icon {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: var(--accent);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.server-status-text h3 {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.server-status-text p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.server-status-text strong {
+  color: var(--primary);
+}
+
+.progress-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  animation: progressPulse 5s infinite ease-in-out;
+  transform-origin: left;
+}
+
+.server-status-footer {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes progressPulse {
+  0% { transform: scaleX(0); }
+  20% { transform: scaleX(0.4); }
+  50% { transform: scaleX(0.7); }
+  80% { transform: scaleX(0.9); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}

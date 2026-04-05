@@ -16,8 +16,10 @@ DB_NAME = os.getenv("DB_NAME", "mockvue")
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
     # Ensure +pymysql driver is present to avoid ModuleNotFoundError: No module named 'MySQLdb'
-    if DATABASE_URL.startswith("mysql://"):
+    if "mysql://" in DATABASE_URL and "+pymysql" not in DATABASE_URL:
         DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
+    elif "mysqls://" in DATABASE_URL:
+        DATABASE_URL = DATABASE_URL.replace("mysqls://", "mysql+pymysql://", 1)
 else:
     DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
     DB_PORT = os.getenv("DB_PORT", "3306")
@@ -38,12 +40,16 @@ if "tidb" in DATABASE_URL.lower() or os.getenv("DB_SSL") == "true":
     ca_path = next((p for p in ca_paths if os.path.exists(p)), ca_paths[0])
     connect_args = {"ssl": {"ca": ca_path}}
 
+print(f"Connecting to: {DATABASE_URL.split('@')[-1]}") # Log host (safe) 
+
 engine = create_engine(
     DATABASE_URL, 
     pool_pre_ping=True, 
     echo=False,
-    connect_args=connect_args
+    connect_args=connect_args,
+    connect_timeout=10 # High-speed timeout for cloud health checks
 )
+print("Database engine initialized successfully.")
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

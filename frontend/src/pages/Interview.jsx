@@ -384,8 +384,8 @@ export default function Interview() {
   };
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-  const readProgress = ((READ_TIME - readTimeLeft) / READ_TIME) * 100;
-  const recProgress = ((RECORD_TIME - recTimeLeft) / RECORD_TIME) * 100;
+  const readProgress = (readTimeLeft / READ_TIME) * 100;
+  const recProgress = (recTimeLeft / RECORD_TIME) * 100;
 
   // Start hardware initialization
   useEffect(() => {

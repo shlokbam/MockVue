@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Key, Check, AlertCircle, Info, ExternalLink } from 'lucide-react';
 import './ApiKeyOverlay.css';
 
 export default function ApiKeyOverlay() {
-  const { user, verifyApiKey, saveApiKey } = useAuth();
+  const { user, verifyApiKey, saveApiKey, logout } = useAuth();
+  const navigate = useNavigate();
   const [apiKey, setApiKey] = useState('');
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: '', text: '' });
@@ -70,6 +72,18 @@ export default function ApiKeyOverlay() {
 
           <button className="btn btn-primary btn-lg w-full" disabled={loading}>
             {loading ? <span className="spinner" /> : 'Activate MockVue'}
+          </button>
+          
+          <button 
+            type="button"
+            className="btn btn-ghost w-full mt-2" 
+            onClick={() => {
+              logout();
+              navigate('/');
+            }}
+            disabled={loading}
+          >
+            Return to Landing Page
           </button>
         </form>
 

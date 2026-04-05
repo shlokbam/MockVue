@@ -14,7 +14,11 @@ DB_NAME = os.getenv("DB_NAME", "mockvue")
 
 # Strategy: Prefer single DATABASE_URL (Standard for Render), fallback to components.
 DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
+if DATABASE_URL:
+    # Ensure +pymysql driver is present to avoid ModuleNotFoundError: No module named 'MySQLdb'
+    if DATABASE_URL.startswith("mysql://"):
+        DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
+else:
     DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
     DB_PORT = os.getenv("DB_PORT", "3306")
     DB_USER = os.getenv("DB_USER", "root")

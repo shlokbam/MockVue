@@ -2,8 +2,6 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import models
-
-# Import engine and Base from database.py to ensure SSL and schema are correct
 from database import engine, Base, DATABASE_URL
 
 # Standard Grading Rubric for Behavioral/Situational Questions
@@ -14,193 +12,487 @@ DEFAULT_RUBRIC = [
     {"point": "Communication & Tone: Was the response professional and structured?", "points": 10}
 ]
 
-# The Massive Curated Dataset
+# The FULL Curated Dataset (270+ Questions)
 RAW_DATA = {
     "Google": {
         "Product Manager": [
-            "Tell me about a time you identified a user problem that others overlooked. What specific steps did you take to validate it?",
+            "Tell me about a time you identified a user problem that others overlooked. What steps did you take to validate it?",
             "Describe a situation where you had multiple feature requests but limited time. How did you decide what to prioritize?",
-            "Tell me about a time your product idea didn’t work as expected. What did you learn and how did you pivot?",
-            "Describe a situation where engineers disagreed with your product approach. How did you handle the conflict?",
-            "Tell me about a time you had to take a major product decision without complete data. What was your reasoning?"
+            "Tell me about a time your product idea didn’t work as expected. What did you learn and change?",
+            "Describe a situation where engineers disagreed with your approach. How did you handle it?",
+            "Tell me about a time you had to take a product decision without complete data. What was your reasoning?"
         ],
         "Data Analyst": [
-            "Tell me about a time your data analysis changed a major business decision. What resistance did you face?",
-            "Describe a situation where your data was incomplete or inconsistent. How did you still derive actionable insights?",
-            "Tell me about a time you found an error in your own analysis after presenting it. How did you handle the situation?",
-            "Describe a situation where stakeholders didn’t understand your technical insights. How did you bridge the communication gap?",
-            "Tell me about a time you used data to question a deep-seated assumption. What was the outcome?"
+            "Tell me about a time your data analysis changed someone’s decision. What resistance did you face?",
+            "Describe a situation where your data was incomplete or inconsistent. How did you still derive insights?",
+            "Tell me about a time you found an error in your analysis. How did you handle it?",
+            "Describe a situation where stakeholders didn’t understand your insights. How did you communicate better?",
+            "Tell me about a time you questioned an assumption using data. What happened next?"
         ],
         "UX Designer": [
-            "Tell me about a time users struggled with a flow you designed. How did you identify the friction and fix it?",
-            "Describe a situation where you had to balance critical user needs against significant technical limitations.",
-            "Tell me about a time your design was rejected by stakeholders. How did you handle the feedback?",
-            "Describe a situation where you had to redesign a core component quickly based on urgent user feedback.",
-            "Tell me about a time you simplified a complex user flow. What was your specific architectural approach?"
+            "Tell me about a time users struggled with something you designed. How did you identify and fix it?",
+            "Describe a situation where you had to balance user needs with technical limitations.",
+            "Tell me about a time your design was rejected. What did you do next?",
+            "Describe a situation where you had to redesign something quickly based on feedback.",
+            "Tell me about a time you simplified a complex user flow. What was your approach?"
         ],
         "Site Reliability Engineer": [
-            "Tell me about a time a system or project failed unexpectedly in production. How did you respond and recover?",
-            "Describe a situation where you had to debug an issue with very little information or logs.",
-            "Tell me about a time you identified and prevented a potential system failure before it actually happened.",
-            "Describe a situation where you had to choose between a quick 'band-aid' fix vs a long-term architectural solution.",
-            "Tell me about a time you automated a significant repetitive process. What was the measurable impact?"
+            "Tell me about a time a system or project failed unexpectedly. How did you respond?",
+            "Describe a situation where you had to debug an issue with very little information.",
+            "Tell me about a time you prevented a potential failure before it happened.",
+            "Describe a situation where you had to choose between quick fix vs long-term solution.",
+            "Tell me about a time you automated a repetitive process. What impact did it have?"
         ],
         "Technical Program Manager": [
-            "Tell me about a time you had to manage multiple stakeholders with conflicting priorities across teams.",
-            "Describe a situation where your project was falling behind schedule. What specific actions did you take to recover?",
-            "Tell me about a time you led a complex project without having formal authority over the team members.",
-            "Describe a situation where communication gaps caused a project delay. How did you resolve the bottleneck?",
-            "Tell me about a time you handled extreme ambiguity in a high-stakes project."
+            "Tell me about a time you had to manage multiple stakeholders with conflicting priorities.",
+            "Describe a situation where your project was falling behind schedule. What actions did you take?",
+            "Tell me about a time you led a project without having formal authority.",
+            "Describe a situation where communication gaps caused issues. How did you fix them?",
+            "Tell me about a time you handled ambiguity in a project."
         ]
     },
     "Amazon": {
         "Software Development Engineer": [
-            "Tell me about a time you took ownership of a critical problem that wasn’t explicitly assigned to you.",
-            "Describe a situation where you had to deliver a feature under a tight deadline. What technical trade-offs did you make?",
-            "Tell me about a time you failed to meet a goal. How did you handle the failure and what changed afterward?",
-            "Describe a situation where you disagreed with your team’s technical approach. How did you present your case?",
-            "Tell me about a time you improved a system's performance or reliability without being asked."
+            "Tell me about a time you took ownership of a problem that wasn’t assigned to you.",
+            "Describe a situation where you had to deliver under a tight deadline. What trade-offs did you make?",
+            "Tell me about a time you failed. How did you handle it and what changed afterward?",
+            "Describe a situation where you disagreed with your team’s approach. What did you do?",
+            "Tell me about a time you improved something without being asked."
         ],
         "Product Manager": [
-            "Tell me about a time you prioritized long-term customer needs over short-term technical convenience.",
-            "Describe a situation where you had conflicting stakeholder inputs. How did you reach a resolution?",
-            "Tell me about a time you had to launch a product quickly with very limited resources.",
-            "Describe a situation where customer feedback forced you to completely rethink your product approach.",
-            "Tell me about a time you made a decision that impacted millions of users. What was your framework?"
+            "Tell me about a time you prioritized customer needs over technical convenience.",
+            "Describe a situation where you had conflicting stakeholder inputs. How did you resolve it?",
+            "Tell me about a time you had to launch something quickly with limited resources.",
+            "Describe a situation where customer feedback forced you to rethink your approach.",
+            "Tell me about a time you made a decision that impacted many users."
         ],
         "Business Analyst": [
-            "Tell me about a time your analysis identified a business problem that senior leadership had missed.",
-            "Describe a situation where your analytical recommendation was challenged by a non-technical manager.",
-            "Tell me about a time you worked with unclear requirements to deliver a critical report.",
-            "Describe a situation where your data-driven insights led to a measurable business improvement.",
-            "Tell me about a time you had to convince a skeptical audience using only data."
+            "Tell me about a time your analysis identified a business problem others missed.",
+            "Describe a situation where your recommendation was challenged.",
+            "Tell me about a time you worked with unclear requirements.",
+            "Describe a situation where your insights led to measurable improvement.",
+            "Tell me about a time you had to convince someone using data."
         ],
         "Operations Manager": [
-            "Tell me about a time things went wrong during a high-stakes execution. How did you recover the operation?",
-            "Describe a situation where you improved a significantly inefficient process using lean methodologies.",
-            "Tell me about a time you handled extreme pressure or a peak workload event (like Prime Day).",
-            "Describe a situation where you had to manage a direct conflict within your operational team.",
-            "Tell me about a time you ensured tight deadlines were met despite significant resource challenges."
+            "Tell me about a time things went wrong during execution. How did you recover?",
+            "Describe a situation where you improved an inefficient process.",
+            "Tell me about a time you handled pressure or peak workload.",
+            "Describe a situation where you had to manage a team conflict.",
+            "Tell me about a time you ensured deadlines were met despite challenges."
         ],
         "QA Engineer": [
-            "Tell me about a time you found a critical edge-case bug that others had overlooked during testing.",
-            "Describe a situation where release pressure conflicted with quality standards. How did you handle it?",
-            "Tell me about a time you significantly improved an existing automated testing process.",
-            "Describe a situation where developers disagreed with your bug report. How did you prove the impact?",
-            "Tell me about a time you ensured high product quality despite having very limited time for testing."
+            "Tell me about a time you found a critical issue others missed.",
+            "Describe a situation where release pressure conflicted with quality. What did you do?",
+            "Tell me about a time you improved a testing process.",
+            "Describe a situation where developers disagreed with your bug report.",
+            "Tell me about a time you ensured high product quality under constraints."
         ]
     },
     "Microsoft": {
         "Software Engineer": [
-            "Tell me about a time you collaborated with a cross-functional team to solve a complex bug.",
-            "Describe a situation where you had to quickly adapt to a major change in technology or project scope.",
-            "Tell me about a time you received difficult constructive criticism. What specific actions did you take?",
-            "Describe a situation where you went out of your way to help a teammate succeed.",
-            "Tell me about a time you handled a challenging production issue under stress."
+            "Tell me about a time you collaborated with others to solve a problem.",
+            "Describe a situation where you had to quickly adapt to a change.",
+            "Tell me about a time you received constructive criticism. What did you do?",
+            "Describe a situation where you helped someone else succeed.",
+            "Tell me about a time you handled a challenging bug or issue."
         ],
         "Product Manager": [
-            "Tell me about a time you aligned different engineering teams toward a common long-term goal.",
-            "Describe a situation where you had to balance immediate user needs with long-term business strategy.",
-            "Tell me about a time your product decision was questioned by leadership. How did you defend it?",
-            "Describe a situation where you had to pivot your product plan due to market changes.",
-            "Tell me about a time you drove significant impact through a single data-informed product decision."
+            "Tell me about a time you aligned different teams toward a common goal.",
+            "Describe a situation where you had to balance user needs with business goals.",
+            "Tell me about a time your product decision was questioned.",
+            "Describe a situation where you had to pivot your plan.",
+            "Tell me about a time you drove impact through a product decision."
         ],
         "Data Scientist": [
-            "Tell me about a time your predictive model didn’t perform as expected in the real world. Why?",
-            "Describe a situation where you had to explain highly complex mathematical results to a simple audience.",
-            "Tell me about a time you handled extremely messy or biased data to find the truth.",
-            "Describe a situation where your statistical insights directly influenced a product feature.",
-            "Tell me about a time you rigorously validated or rejected a common business hypothesis."
+            "Tell me about a time your model or analysis didn’t perform as expected.",
+            "Describe a situation where you had to explain complex results simply.",
+            "Tell me about a time you handled messy or biased data.",
+            "Describe a situation where your insights influenced a decision.",
+            "Tell me about a time you validated or rejected a hypothesis."
+        ],
+        "UX Designer": [
+            "Tell me about a time you improved accessibility or usability.",
+            "Describe a situation where user feedback changed your design direction.",
+            "Tell me about a time you collaborated with engineers on design trade-offs.",
+            "Describe a situation where you iterated multiple times on a design.",
+            "Tell me about a time you solved a user pain point effectively."
+        ],
+        "Cloud Engineer": [
+            "Tell me about a time you deployed or managed a system in production.",
+            "Describe a situation where you handled a system outage or failure.",
+            "Tell me about a time you improved scalability or reliability.",
+            "Describe a situation where you automated infrastructure tasks.",
+            "Tell me about a time you troubleshot a complex issue."
         ]
     },
     "Adobe": {
         "Software Engineer": [
-            "Tell me about a time you had to debug a performance issue that was blocking an entire release.",
-            "Describe a situation where you chose to improve an existing legacy feature rather than building something new.",
-            "Tell me about a time you had to work closely with UI/UX designers and had a difference of opinion.",
-            "Describe a situation where your code caused a production regression. How did you handle it?",
-            "Tell me about a time you had to balance speed of delivery with maintaining high code quality."
+            "Tell me about a time you had to debug an issue that was blocking others. How did you approach it?",
+            "Describe a situation where you improved an existing feature rather than building something new.",
+            "Tell me about a time you had to work closely with designers. How did you handle differences in opinion?",
+            "Describe a situation where your code caused an issue. How did you respond?",
+            "Tell me about a time you had to balance speed of delivery with code quality."
+        ],
+        "Product Manager": [
+            "Tell me about a time you had to understand user pain points deeply before proposing a solution.",
+            "Describe a situation where you had to say “no” to a feature request. How did you handle it?",
+            "Tell me about a time your product decision was wrong. What did you do next?",
+            "Describe a situation where different teams had conflicting priorities.",
+            "Tell me about a time you measured the success of a feature."
+        ],
+        "UX Designer": [
+            "Tell me about a time users didn’t understand your design. How did you fix it?",
+            "Describe a situation where you had to redesign something under tight timelines.",
+            "Tell me about a time feedback forced you to rethink your approach.",
+            "Describe a situation where you collaborated with developers to implement design changes.",
+            "Tell me about a time you simplified a complex interaction."
+        ],
+        "Data Analyst": [
+            "Tell me about a time your data analysis revealed an unexpected insight.",
+            "Describe a situation where stakeholders didn’t trust your data. What did you do?",
+            "Tell me about a time you worked with incomplete or dirty data.",
+            "Describe a situation where your analysis helped improve a product or process.",
+            "Tell me about a time you had to explain data to a non-technical audience."
+        ],
+        "QA Engineer": [
+            "Tell me about a time you caught a critical bug just before release.",
+            "Describe a situation where you had to push back on a release due to quality concerns.",
+            "Tell me about a time developers disagreed with your test results.",
+            "Describe a situation where you improved testing efficiency.",
+            "Tell me about a time you ensured quality under tight deadlines."
         ]
     },
     "Meta": {
         "Software Engineer": [
-            "Tell me about a time you had to 'move fast' but still maintain technical excellence.",
-            "Describe a situation where you handled a significant performance bottleneck in a high-traffic app.",
-            "Tell me about a time your architecture didn’t scale as expected. What did you change?",
-            "Describe a situation where you had to quickly fix a critical production issue impacting millions.",
-            "Tell me about a time you worked in a highly collaborative and fast-paced environment."
+            "Tell me about a time you had to move fast but still maintain quality.",
+            "Describe a situation where you handled a performance bottleneck.",
+            "Tell me about a time your solution didn’t scale as expected.",
+            "Describe a situation where you had to quickly fix a production issue.",
+            "Tell me about a time you worked in a highly collaborative environment."
+        ],
+        "Product Manager": [
+            "Tell me about a time you focused on maximizing user engagement.",
+            "Describe a situation where you had to prioritize speed over perfection.",
+            "Tell me about a time user feedback changed your roadmap.",
+            "Describe a situation where you launched something quickly and iterated later.",
+            "Tell me about a time you measured product success using metrics."
+        ],
+        "Data Scientist": [
+            "Tell me about a time you designed an experiment (A/B test).",
+            "Describe a situation where your hypothesis was wrong.",
+            "Tell me about a time you worked with large-scale data.",
+            "Describe a situation where your insights influenced product changes.",
+            "Tell me about a time you simplified complex findings for others."
+        ],
+        "UX Designer": [
+            "Tell me about a time you designed for a large user base with different needs.",
+            "Describe a situation where you iterated rapidly on a design.",
+            "Tell me about a time you handled conflicting feedback.",
+            "Describe a situation where you improved user engagement through design.",
+            "Tell me about a time you made a design decision with limited data."
+        ],
+        "Program Manager": [
+            "Tell me about a time you managed multiple teams working on the same project.",
+            "Describe a situation where deadlines were at risk. What did you do?",
+            "Tell me about a time you resolved conflict between teams.",
+            "Describe a situation where communication breakdown caused issues.",
+            "Tell me about a time you delivered results under pressure."
         ]
     },
     "Netflix": {
         "Software Engineer": [
-            "Tell me about a time you owned a major system or feature from inception to production.",
-            "Describe a situation where you drastically improved system performance or reduced latency.",
-            "Tell me about a time you handled a critical production failure independently.",
-            "Describe a situation where you made a difficult trade-off between absolute reliability and delivery speed.",
-            "Tell me about a time you made a high-impact decision without seeking consensus from leadership."
+            "Tell me about a time you owned a system or feature end-to-end.",
+            "Describe a situation where you improved system performance.",
+            "Tell me about a time you handled a production failure.",
+            "Describe a situation where you made a trade-off between reliability and speed.",
+            "Tell me about a time you made a decision independently."
+        ],
+        "Data Engineer": [
+            "Tell me about a time you built or improved a data pipeline.",
+            "Describe a situation where data quality was an issue.",
+            "Tell me about a time you optimized data processing.",
+            "Describe a situation where you handled large-scale data challenges.",
+            "Tell me about a time you ensured reliability in data systems."
+        ],
+        "Product Manager": [
+            "Tell me about a time you made a product decision with limited information.",
+            "Describe a situation where you focused on user satisfaction.",
+            "Tell me about a time you handled ambiguity in a product decision.",
+            "Describe a situation where you measured product success.",
+            "Tell me about a time you had to defend your product decision."
+        ],
+        "Content Analyst": [
+            "Tell me about a time you analyzed user behavior patterns.",
+            "Describe a situation where your insights influenced recommendations.",
+            "Tell me about a time you handled ambiguous data.",
+            "Describe a situation where you communicated insights clearly.",
+            "Tell me about a time you identified a trend early."
+        ],
+        "QA Engineer": [
+            "Tell me about a time you ensured quality in a high-scale system.",
+            "Describe a situation where you automated testing.",
+            "Tell me about a time you caught a critical issue.",
+            "Describe a situation where release timelines were tight.",
+            "Tell me about a time you improved testing processes."
         ]
     },
     "Flipkart": {
         "Software Engineer": [
-            "Tell me about a time you optimized system performance to handle a massive surge in traffic (e.g., Big Billion Days).",
-            "Describe a situation where your code had to handle extreme scale challenges.",
-            "Tell me about a time you debugged a complex distributed systems issue.",
-            "Describe a situation where you worked under an extremely tight deadline to launch a feature.",
-            "Tell me about a time you significantly improved an existing legacy system."
+            "Tell me about a time you optimized performance in a project.",
+            "Describe a situation where your code had to handle scale.",
+            "Tell me about a time you debugged a complex issue.",
+            "Describe a situation where you worked under tight deadlines.",
+            "Tell me about a time you improved an existing system."
+        ],
+        "Product Manager": [
+            "Tell me about a time you prioritized user needs over business constraints.",
+            "Describe a situation where you handled multiple feature requests.",
+            "Tell me about a time you improved customer experience.",
+            "Describe a situation where you made trade-offs.",
+            "Tell me about a time you used data to guide product decisions."
+        ],
+        "Product Analyst": [
+            "Tell me about a time you analyzed user behavior.",
+            "Describe a situation where your insights improved a feature.",
+            "Tell me about a time you worked with large datasets.",
+            "Describe a situation where you communicated findings.",
+            "Tell me about a time you validated assumptions with data."
+        ],
+        "Operations Executive": [
+            "Tell me about a time you handled operational pressure.",
+            "Describe a situation where you improved efficiency.",
+            "Tell me about a time things didn’t go as planned.",
+            "Describe a situation where you coordinated with multiple teams.",
+            "Tell me about a time you met tight deadlines."
+        ],
+        "QA Engineer": [
+            "Tell me about a time you ensured product quality before release.",
+            "Describe a situation where you found a major issue.",
+            "Tell me about a time you improved testing processes.",
+            "Describe a situation where you worked with developers.",
+            "Tell me about a time you handled release pressure."
         ]
     },
     "Accenture": {
         "Associate Software Engineer": [
-            "Tell me about a time you learned a new technology or framework very quickly for a client project.",
-            "Describe a situation where you worked in a high-performing team under strict deadlines.",
-            "Tell me about a time you faced a difficult technical challenge and how you sought help.",
-            "Describe a situation where you had to communicate a complex solution clearly to a non-technical peer.",
-            "Tell me about a time you adapted to rapidly changing project requirements."
+            "Tell me about a time you learned a new technology quickly for a project.",
+            "Describe a situation where you worked in a team under deadlines.",
+            "Tell me about a time you faced a technical challenge.",
+            "Describe a situation where you had to communicate your solution clearly.",
+            "Tell me about a time you adapted to changing requirements."
+        ],
+        "Business Analyst": [
+            "Tell me about a time you gathered unclear requirements.",
+            "Describe a situation where you had to present your ideas.",
+            "Tell me about a time you improved a process.",
+            "Describe a situation where stakeholders disagreed.",
+            "Tell me about a time you used data to support decisions."
+        ],
+        "Consultant": [
+            "Tell me about a time you solved a client-like problem.",
+            "Describe a situation where you worked under pressure.",
+            "Tell me about a time you influenced someone’s decision.",
+            "Describe a situation where you handled ambiguity.",
+            "Tell me about a time you delivered results within constraints."
+        ],
+        "Project Manager": [
+            "Tell me about a time you managed a project timeline.",
+            "Describe a situation where a project was delayed.",
+            "Tell me about a time you handled team conflicts.",
+            "Describe a situation where priorities changed.",
+            "Tell me about a time you ensured successful delivery."
+        ],
+        "QA Tester": [
+            "Tell me about a time you ensured quality in a project.",
+            "Describe a situation where you found critical issues.",
+            "Tell me about a time you improved testing.",
+            "Describe a situation where you worked with developers.",
+            "Tell me about a time you handled deadlines."
         ]
     },
     "Wipro": {
         "Project Engineer": [
-            "Tell me about a time you worked in a team with very tight delivery deadlines.",
-            "Describe a situation where you had to learn a new tool or technology almost overnight.",
-            "Tell me about a time you faced a persistent technical issue and finally solved it.",
-            "Describe a situation where clear communication helped you resolve a major team misunderstanding.",
-            "Tell me about a time you took full responsibility for a task that was failing."
+            "Tell me about a time you worked in a team with tight deadlines.",
+            "Describe a situation where you had to learn a new tool quickly.",
+            "Tell me about a time you faced a technical issue and solved it.",
+            "Describe a situation where communication helped resolve a problem.",
+            "Tell me about a time you took responsibility for a task."
+        ],
+        "Software Developer": [
+            "Tell me about a time you debugged a difficult issue.",
+            "Describe a situation where you improved code or logic.",
+            "Tell me about a time you collaborated on a project.",
+            "Describe a situation where you had to meet a deadline.",
+            "Tell me about a time you adapted to changes."
+        ],
+        "Business Analyst": [
+            "Tell me about a time you gathered unclear requirements.",
+            "Describe a situation where you presented your findings.",
+            "Tell me about a time you improved a process.",
+            "Describe a situation where stakeholders disagreed.",
+            "Tell me about a time you used data for decisions."
+        ],
+        "Support Engineer": [
+            "Tell me about a time you resolved a technical issue.",
+            "Describe a situation where you handled a difficult user.",
+            "Tell me about a time you prioritized multiple tasks.",
+            "Describe a situation where you worked under pressure.",
+            "Tell me about a time you improved service quality."
+        ],
+        "QA Tester": [
+            "Tell me about a time you ensured product quality.",
+            "Describe a situation where you found a critical bug.",
+            "Tell me about a time you improved testing efficiency.",
+            "Describe a situation where deadlines were tight.",
+            "Tell me about a time you worked with developers."
         ]
     },
     "Zoho": {
         "Software Developer": [
-            "Tell me about a time you built a tool or a feature from scratch with no prior documentation.",
-            "Describe a situation where you optimized the backend performance of a data-heavy application.",
-            "Tell me about a time you solved a complex technical problem using a creative, out-of-the-box approach.",
-            "Describe a situation where you improved the logic or architecture of an existing system.",
-            "Tell me about a time you worked independently on a high-stakes project from start to finish."
+            "Tell me about a time you built something from scratch.",
+            "Describe a situation where you optimized performance.",
+            "Tell me about a time you solved a complex problem creatively.",
+            "Describe a situation where you improved an existing system.",
+            "Tell me about a time you worked independently on a project."
+        ],
+        "Product Manager": [
+            "Tell me about a time you identified a user need.",
+            "Describe a situation where you prioritized features.",
+            "Tell me about a time you handled feedback.",
+            "Describe a situation where you made product trade-offs.",
+            "Tell me about a time you measured product success."
+        ],
+        "QA Engineer": [
+            "Tell me about a time you found a hidden issue.",
+            "Describe a situation where you improved testing.",
+            "Tell me about a time you handled release pressure.",
+            "Describe a situation where you collaborated with developers.",
+            "Tell me about a time you ensured quality."
+        ],
+        "Technical Support Engineer": [
+            "Tell me about a time you solved a customer problem.",
+            "Describe a situation where you explained a technical issue simply.",
+            "Tell me about a time you handled multiple issues.",
+            "Describe a situation where you worked under pressure.",
+            "Tell me about a time you improved customer satisfaction."
+        ],
+        "UI Developer": [
+            "Tell me about a time you improved user interface experience.",
+            "Describe a situation where you handled design constraints.",
+            "Tell me about a time you fixed UI bugs.",
+            "Describe a situation where you worked with designers.",
+            "Tell me about a time you optimized frontend performance."
         ]
     },
     "Swiggy": {
         "Software Engineer": [
-            "Tell me about a time you optimized a real-time system's performance to reduce latency.",
-            "Describe a situation where you handled extreme high-load scenarios during a peak event.",
-            "Tell me about a time you debugged a mission-critical production issue during peak hours.",
-            "Describe a situation where you improved an existing logistics or ordering system.",
-            "Tell me about a time you worked under extreme pressure to meet a delivery deadline."
+            "Tell me about a time you optimized system performance.",
+            "Describe a situation where you handled high load scenarios.",
+            "Tell me about a time you debugged a production issue.",
+            "Describe a situation where you improved an existing system.",
+            "Tell me about a time you worked under tight deadlines."
+        ],
+        "Product Manager": [
+            "Tell me about a time you improved customer experience.",
+            "Describe a situation where you prioritized features quickly.",
+            "Tell me about a time you handled user complaints.",
+            "Describe a situation where you made trade-offs.",
+            "Tell me about a time you used data to improve a product."
+        ],
+        "Operations Manager": [
+            "Tell me about a time operations didn’t go as planned.",
+            "Describe a situation where you improved efficiency.",
+            "Tell me about a time you handled peak workload.",
+            "Describe a situation where you coordinated teams.",
+            "Tell me about a time you ensured timely delivery."
+        ],
+        "Data Analyst": [
+            "Tell me about a time you analyzed customer behavior.",
+            "Describe a situation where your insights improved a process.",
+            "Tell me about a time you handled large datasets.",
+            "Describe a situation where you communicated insights.",
+            "Tell me about a time you validated assumptions."
+        ],
+        "QA Engineer": [
+            "Tell me about a time you ensured product quality.",
+            "Describe a situation where you found a major issue.",
+            "Tell me about a time you improved testing.",
+            "Describe a situation where you worked under deadlines.",
+            "Tell me about a time you collaborated with developers."
         ]
     },
     "Zomato": {
         "Software Engineer": [
-            "Tell me about a time you improved a system's performance to handle millions of concurrent users.",
-            "Describe a situation where you handled significant scalability challenges in a microservices architecture.",
-            "Tell me about a time you debugged a complex issue that spanned multiple services.",
-            "Describe a situation where you improved an existing feature to enhance user experience.",
-            "Tell me about a time you delivered a high-quality feature under intense pressure."
+            "Tell me about a time you improved system performance.",
+            "Describe a situation where you handled scalability challenges.",
+            "Tell me about a time you debugged a complex issue.",
+            "Describe a situation where you improved an existing feature.",
+            "Tell me about a time you delivered under pressure."
+        ],
+        "Product Manager": [
+            "Tell me about a time you improved user experience.",
+            "Describe a situation where you handled conflicting priorities.",
+            "Tell me about a time you used data for decisions.",
+            "Describe a situation where you made product trade-offs.",
+            "Tell me about a time you handled user feedback."
+        ],
+        "Data Analyst": [
+            "Tell me about a time you analyzed user behavior.",
+            "Describe a situation where your insights drove change.",
+            "Tell me about a time you handled messy data.",
+            "Describe a situation where you communicated findings.",
+            "Tell me about a time you validated insights."
+        ],
+        "Operations Executive": [
+            "Tell me about a time you handled operational challenges.",
+            "Describe a situation where you improved efficiency.",
+            "Tell me about a time you worked under pressure.",
+            "Describe a situation where you coordinated teams.",
+            "Tell me about a time you ensured timely execution."
+        ],
+        "QA Engineer": [
+            "Tell me about a time you ensured product quality.",
+            "Describe a situation where you found critical bugs.",
+            "Tell me about a time you improved testing processes.",
+            "Describe a situation where deadlines were tight.",
+            "Tell me about a time you collaborated with developers."
         ]
     },
     "Capgemini": {
         "Software Engineer": [
-            "Tell me about a time you solved a technical challenge that was causing a project delay.",
-            "Describe a situation where you worked in a global team to deliver a project.",
-            "Tell me about a time you learned a new industry-specific domain quickly.",
-            "Describe a situation where you handled tight deadlines for a critical client delivery.",
-            "Tell me about a time you improved the maintainability of your team's code."
+            "Tell me about a time you solved a technical challenge.",
+            "Describe a situation where you worked in a team.",
+            "Tell me about a time you learned something quickly.",
+            "Describe a situation where you handled deadlines.",
+            "Tell me about a time you improved your code."
+        ],
+        "Business Analyst": [
+            "Tell me about a time you gathered requirements.",
+            "Describe a situation where you presented ideas.",
+            "Tell me about a time you improved a process.",
+            "Describe a situation where stakeholders disagreed.",
+            "Tell me about a time you used data for decisions."
+        ],
+        "Consultant": [
+            "Tell me about a time you solved a real-world problem.",
+            "Describe a situation where you worked under pressure.",
+            "Tell me about a time you influenced someone.",
+            "Describe a situation where you handled ambiguity.",
+            "Tell me about a time you delivered results."
+        ],
+        "Project Manager": [
+            "Tell me about a time you managed a project timeline.",
+            "Describe a situation where a project was delayed.",
+            "Tell me about a time you handled conflicts.",
+            "Describe a situation where priorities changed.",
+            "Tell me about a time you ensured delivery."
+        ],
+        "QA Tester": [
+            "Tell me about a time you ensured quality.",
+            "Describe a situation where you found issues.",
+            "Tell me about a time you improved testing.",
+            "Describe a situation where you worked with developers.",
+            "Tell me about a time you handled deadlines."
         ]
     }
 }
@@ -234,11 +526,7 @@ def seed():
     try:
         print(f"Seeding database at: {DATABASE_URL.split('@')[-1]}")
         
-        # Clear existing data to prevent foreign key errors
-        # (Must delete Answers and Sessions before Questions)
         # 🛡️ SAFE MODE: We no longer wipe your personal results!
-        # Only cleanup once if you truly want to reset the whole system.
-        # print("Cleaning up old test data...")
         # db.query(models.Answer).delete()
         # db.query(models.Session).delete()
         db.query(models.Question).delete()

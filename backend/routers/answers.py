@@ -119,7 +119,12 @@ def submit_answer(
     # Process audio if provided
     if audio:
         try:
-            client = Groq(api_key=current_user.groq_api_key)
+            # Use user key, fallback to system key
+            api_key = current_user.groq_api_key or os.getenv("GROQ_API_KEY")
+            if not api_key:
+                raise Exception("No Groq API Key found for transcription.")
+
+            client = Groq(api_key=api_key)
             audio_data = audio.file.read()
             filename = audio.filename or "recording.webm"
             # Some platforms might pass an empty file, check size
@@ -190,12 +195,16 @@ def submit_answer(
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
 
-    # Call Groq for answer scoring
+    # Call Groq for answer scoring (Use user key, fallback to system key)
+    api_key = current_user.groq_api_key or os.getenv("GROQ_API_KEY")
+    if not api_key:
+         raise HTTPException(status_code=400, detail="No Groq API Key found. Please add one in your Profile.")
+
     groq_result = call_groq(
         question_text=question.question_text,
         rubric=question.rubric,
         transcript=transcript,
-        api_key=current_user.groq_api_key
+        api_key=api_key
     )
 
     # Compute component scores

@@ -262,14 +262,19 @@ export default function Dashboard() {
                       <div className="session-card-left">
                         <div className="session-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                           <div className="session-company">{s.company}</div>
-                          <div className="session-monogram" style={{ 
-                            width: 32, height: 32, borderRadius: 8, 
-                            background: 'var(--accent-gradient)', 
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 14, fontWeight: 700, color: '#fff',
-                            boxShadow: 'var(--shadow-glow)'
-                          }}>
-                            {s.company.charAt(0)}
+                          <div className="session-monogram">
+                            {s.logo ? (
+                              <img 
+                                src={s.logo} 
+                                alt={s.company} 
+                                className="session-logo-img"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  e.target.nextElementSibling.style.display = 'block';
+                                }}
+                              />
+                            ) : null}
+                            <span style={{ display: s.logo ? 'none' : 'block' }}>{s.company.charAt(0)}</span>
                           </div>
                         </div>
                         <div className="session-meta">

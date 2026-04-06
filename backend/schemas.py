@@ -94,6 +94,7 @@ class SessionOut(BaseModel):
     date: datetime
     overall_score: float
     status: str
+    logo: Optional[str] = None
 
     class Config:
         from_attributes = True

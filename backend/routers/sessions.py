@@ -4,6 +4,7 @@ from database import get_db
 from typing import List
 import models, schemas
 from auth import get_current_user
+from utils import get_company_logo_data
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -30,9 +31,16 @@ def get_sessions(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    return db.query(models.Session).filter(
+    sessions = db.query(models.Session).filter(
         models.Session.user_id == current_user.id
     ).order_by(models.Session.date.desc()).all()
+    
+    # Inject logos
+    for s in sessions:
+        branding = get_company_logo_data(s.company)
+        s.logo = branding["logo"]
+        
+    return sessions
 
 
 @router.get("/{session_id}", response_model=schemas.SessionOut)
@@ -47,6 +55,10 @@ def get_session(
     ).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
+        
+    branding = get_company_logo_data(session.company)
+    session.logo = branding["logo"]
+    
     return session
 
 

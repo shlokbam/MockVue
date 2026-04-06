@@ -4,6 +4,7 @@ from database import get_db
 from typing import List
 import models, schemas, random
 from auth import get_current_user
+from utils import get_company_logo_data
 
 router = APIRouter(prefix="/questions", tags=["questions"])
 
@@ -48,26 +49,16 @@ def get_question_metadata(db: Session = Depends(get_db)):
             metadata[company].append(role)
             
     # Convert to a list of dicts for the frontend
-    # Add some basic branding logic (logo/color) based on the company name
     formatted = []
     for company, roles in metadata.items():
-        # Heuristic for color/monogram
-        monogram = "".join([w[0] for w in company.split()[:2]]).upper()
-        
-        # Consistent color based on name
-        import hashlib
-        color_hex = "#" + hashlib.md5(company.encode()).hexdigest()[:6]
-        
-        # Clearbit logo (optional)
-        domain = company.lower().replace(" ", "") + ".com"
-        logo = f"https://logo.clearbit.com/{domain}" if company != "General HR" else None
+        branding = get_company_logo_data(company)
         
         formatted.append({
             "id": company,
             "name": company,
-            "monogram": monogram,
-            "color": color_hex,
-            "logo": logo,
+            "monogram": branding["monogram"],
+            "color": branding["color"],
+            "logo": branding["logo"],
             "roles": roles
         })
         

@@ -87,7 +87,7 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, var(--primary), var(--accent));
-  animation: progressPulse 5s infinite ease-in-out;
+  animation: progressSlowFill 45s linear forwards;
   transform-origin: left;
 }
 
@@ -102,11 +102,10 @@
   to { transform: rotate(360deg); }
 }
 
-@keyframes progressPulse {
+@keyframes progressSlowFill {
   0% { transform: scaleX(0); }
-  20% { transform: scaleX(0.4); }
-  50% { transform: scaleX(0.7); }
-  80% { transform: scaleX(0.9); }
+  20% { transform: scaleX(0.2); }
+  50% { transform: scaleX(0.5); }
   100% { transform: scaleX(1); }
 }
 

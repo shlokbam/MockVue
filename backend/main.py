@@ -1,18 +1,25 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-import models
+import models, time
 from routers import auth, questions, sessions, answers, dashboard, feedback
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
 
-from fastapi import FastAPI, Request
-import time
-
 app = FastAPI(title="MockVue API", version="1.0.0")
 
-# Request Logger Middleware for stability debugging
+# CORS — allow all origins. Safe because we use JWT headers, not cookies.
+# allow_credentials must be False when allow_origins=["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Request Logger — helps debug Render shutdowns
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -20,18 +27,6 @@ async def log_requests(request: Request, call_next):
     duration = time.time() - start_time
     print(f"DEBUG: {request.method} {request.url.path} - {response.status_code} ({duration:.2f}s)")
     return response
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://mock-vue.vercel.app", 
-        "http://localhost:5173",
-        "http://127.0.0.1:5173"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 app.include_router(auth.router)
 app.include_router(questions.router)

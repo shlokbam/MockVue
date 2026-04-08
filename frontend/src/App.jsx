@@ -22,7 +22,9 @@ export default function App() {
 
   useEffect(() => {
     // Check if we've already confirmed the server is awake in this session
-    const isAlreadyAwake = sessionStorage.getItem('mockvue_server_awake') === 'true';
+    if (sessionStorage.getItem('mockvue_server_awake') === 'true') {
+      return;
+    }
 
     // Initial ping to wake up the backend if it's sleeping
     const timeout = setTimeout(() => {

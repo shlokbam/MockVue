@@ -129,9 +129,9 @@ def submit_answer(
             filename = audio.filename or "recording.webm"
             # Some platforms might pass an empty file, check size
             if len(audio_data) > 0:
-                transcription = client.audio.translations.create(
+                transcription = client.audio.transcriptions.create(
                     file=(filename, audio_data),
-                    model="whisper-large-v3-turbo",
+                    model="whisper-large-v3", # v3 is more stable for transcription+details
                     response_format="verbose_json"
                 )
                 

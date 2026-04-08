@@ -82,7 +82,11 @@ export default function LandingPage() {
       }
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Something went wrong. Please try again.');
+      if (!err.response) {
+        setError('Connection error. The server might still be waking up – please try again in 5-10 seconds.');
+      } else {
+        setError(err.response?.data?.detail || 'Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

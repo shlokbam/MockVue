@@ -21,16 +21,23 @@ export default function App() {
   const [wakingUp, setWakingUp] = useState(false);
 
   useEffect(() => {
-    // Initial ping to wake up the backend if it's sleeping
-    let isSlow = false;
-    const timeout = setTimeout(() => {
-      isSlow = true;
-      setWakingUp(true);
-    }, 2500); // If no response in 2.5s, it's likely a cold start
+    // Check if we've already confirmed the server is awake in this session
+    const isAlreadyAwake = sessionStorage.getItem('mockvue_server_awake') === 'true';
 
-    api.get('/').then(() => {
+    // Initial ping to wake up the backend if it's sleeping
+    const timeout = setTimeout(() => {
+      // Only show the waking up UI if server hasn't responded within 5s
+      // and we haven't previously confirmed it's awake.
+      if (!sessionStorage.getItem('mockvue_server_awake')) {
+        setWakingUp(true);
+      }
+    }, 5000); // Increased threshold to 5s for better UX on slow connections
+
+    // Ping with cache busting
+    api.get(`/?t=${Date.now()}`).then(() => {
       clearTimeout(timeout);
       setWakingUp(false);
+      sessionStorage.setItem('mockvue_server_awake', 'true');
     }).catch(() => {
       // Even on error, we stop the "waking up" UI if the server replied
       clearTimeout(timeout);

@@ -15,7 +15,16 @@ api.interceptors.request.use((config) => {
 // Handle 401 → clear auth and redirect
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
+  async (err) => {
+    // Retry logic for network errors (common during cold starts)
+    const config = err.config;
+    if (!err.response && !config._retry) {
+      config._retry = true;
+      // Wait 1s before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return api(config);
+    }
+
     if (err.response?.status === 401) {
       localStorage.removeItem('mockvue_token');
       localStorage.removeItem('mockvue_user');

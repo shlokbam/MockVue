@@ -13,7 +13,7 @@ app.add_middleware(
     CORSMiddleware,
     # Allow all origins for the initial multi-cloud deployment to prevent CORS errors.
     allow_origins=["*"], 
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -26,6 +26,6 @@ app.include_router(dashboard.router)
 app.include_router(feedback.router)
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root():
     return {"message": "MockVue API is running", "version": "1.0.0"}

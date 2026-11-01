@@ -100,3 +100,7 @@ npm install && npm run dev
 
 ## 🔥 Unleash the AI
 Get your free API key at [console.groq.com](https://console.groq.com) and verify it directly in the MockVue UI!
+
+---
+
+Built by [Shlok Bam](https://shlokbam.in), see more projects on my portfolio.

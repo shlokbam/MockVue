@@ -267,7 +267,7 @@ export default function LandingPage() {
       </div>
 
       <footer className="landing-footer">
-        MockVue &copy; 2026 &middot; Interview prep for campus placements
+        MockVue &copy; 2026 &middot; Interview prep for campus placements &middot; <a href="https://shlokbam.in" target="_blank" rel="noopener" style={{ color: 'inherit', opacity: 0.75 }}>Built by Shlok Bam · shlokbam.in</a>
       </footer>
     </div>
   );

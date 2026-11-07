@@ -1,106 +1,84 @@
-# MockVue 🎥
+<div align="center">
 
-[![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)](https://mock-vue.vercel.app)
-[![Render](https://img.shields.io/badge/Backend-Render-darkblue?logo=render)](https://mockvue-backend.onrender.com)
-[![TiDB Cloud](https://img.shields.io/badge/Database-TiDB_Cloud-orange?logo=mysql)](https://tidbcloud.com)
-[![Groq AI](https://img.shields.io/badge/AI-Groq_Llama--3.3-green)](https://groq.com)
+<img src=".github/assets/banner.svg" alt="MockVue: practise the interview, get scored" width="100%">
 
-> Master AI-powered video interviews with instant feedback on content, confidence, and eye contact. **Now with 330+ professional questions from Google, Amazon, Microsoft, Adobe, Meta, Netflix, Flipkart, Accenture, Wipro, Zoho, Swiggy, Zomato, and Capgemini.**
+<img src="https://img.shields.io/badge/live-mock--vue.vercel.app-FF5A1F?style=flat-square&labelColor=2A2926" alt="live: mock-vue.vercel.app">
+<img src="https://img.shields.io/badge/questions-330%2B-FF5A1F?style=flat-square&labelColor=2A2926" alt="questions: 330+">
+<img src="https://img.shields.io/badge/companies-13-F2EFE7?style=flat-square&labelColor=2A2926" alt="companies: 13">
+<img src="https://img.shields.io/badge/speech-Whisper%20large--v3-F2EFE7?style=flat-square&labelColor=2A2926" alt="speech: Whisper large-v3">
+<img src="https://img.shields.io/badge/db-TiDB%20Cloud-F2EFE7?style=flat-square&labelColor=2A2926" alt="db: TiDB Cloud">
+<img src="https://img.shields.io/badge/hosting-Vercel%20%2B%20Render-F2EFE7?style=flat-square&labelColor=2A2926" alt="hosting: Vercel + Render">
 
----
+<a href="https://mock-vue.vercel.app">Live app</a> · <a href="#what-it-does">What it does</a> · <a href="#how-it-works">How it works</a> · <a href="#quickstart">Quickstart</a> · <a href="#design-decisions">Decisions</a> · <a href="docs/DETAILS.md">Full notes</a>
 
-## 🏛️ Cloud-Native Architecture
+</div>
 
-MockVue is a full-stack, cloud-native application designed for high availability and zero-cost operation on the free tier:
+## In one minute
 
-| Layer | Provider | Role |
-|-------|----------|------|
-| **Frontend** | **Vercel** | React (Vite) application with global edge delivery and SPA routing. |
-| **Backend** | **Render** | Fast API (Python 3.12) with automated **Cold-Start UX Support**. |
-| **Database** | **TiDB Cloud** | Serverless MySQL with 5GB free storage and persistent cloud sessions. |
-| **AI Engine** | **Groq** | Llama 3.3 70B for grading & Whisper-v3-Turbo for transcription. |
+- **Problem:** practising for interviews alone gives no feedback, and mock interviews with people are hard to schedule.
+- **What this does:** pick a company and role, answer on camera, and get a report: an AI grade of your answer's content, plus filler words, speaking pace, silences and eye contact.
+- **Result:** 330+ questions across 13 companies (Google, Amazon, Microsoft, Adobe, Meta, Netflix, Flipkart and more), with session history and score trends saved per user. It runs on free tiers end to end.
 
----
+## What it does
 
-## 🚀 Key Features
+| Feature | How |
+| :--- | :--- |
+| Question bank | 330+ questions, 5 roles for each of 13 companies, loaded from the database so new ones appear without a deploy |
+| Answer grading | Your audio is transcribed with Groq Whisper, then graded by Llama 3.3 70B against a JSON rubric |
+| Delivery metrics | Filler words, words per minute and pauses over 3 s, folded into a confidence score |
+| Eye contact | Gaze tracking in the browser with `face-api.js`; video never leaves your device |
+| History | Sessions, answers and score trends stored in TiDB Cloud |
+| Cold starts | A wake-up screen while the free Render backend boots |
 
-- **🎯 330+ Professional Questions**: 5 curated roles for each of the **13 Top Tech Companies**.
-- **🔄 Dynamic Configuration**: The UI automatically syncs with your database. Add new questions via SQL or Seed script, and they appear in the UI instantly.
-- **🛡️ Cold Start UX**: Integrated "Wake-up" system for Render. Users see a premium notification while the cloud backend spins up.
-- **👁️ Eye Contact Analysis**: Real-time gaze tracking via `face-api.js` to ensure professional camera presence.
-- **🗣️ Confidence Metrics**: Automated detection of filler words (um, ah, etc.), speaking pace (WPM), and silence analysis.
-- **📊 Persistence**: Your session history and score trends are securely stored in TiDB Cloud.
+## How it works
 
----
-
-## 🛠️ Production Setup Guide
-
-### 1. Database (TiDB Cloud)
-1.  Create a cluster at [tidbcloud.com](https://tidbcloud.com).
-2.  Copy your **Standard Connection String** (format: `mysql+pymysql://user:pass@host:port/test`).
-
-### 2. Backend (Render)
-1.  Connect your GitHub repo to a Render Web Service.
-2.  **Env Variables**: `DATABASE_URL` (TiDB string), `SECRET_KEY`, `ALGORITHM` (HS256).
-3.  **Build**: `pip install -r requirements.txt`
-4.  **Start**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-
-### 3. Frontend (Vercel)
-1.  Import `frontend` folder into Vercel.
-2.  **Env Variables**: `VITE_API_BASE_URL` (Your Render URL).
-3.  **Routing**: `vercel.json` handles SPA rewrites automatically.
-
----
-
-## 🏗️ Data Management (Seeding & Diagnostics)
-
-We provide tools to manage your cloud database safely:
-
-### 1. Professional Seed (Safe Mode)
-Populates your database with 330 questions without wiping your personal results:
-```bash
-cd backend
-python3 seed_db.py
+```mermaid
+flowchart LR
+    U[React app · camera + mic] -->|audio| API[FastAPI on Render]
+    U --> FA[face-api.js · eye contact, in browser]
+    API --> W[Groq Whisper · transcript]
+    W --> L[Llama 3.3 70B · rubric score]
+    API --> DB[(TiDB Cloud · MySQL)]
 ```
 
-### 2. Cloud Diagnostics
-Check your cloud data status (User count, Questions, Recent Sessions):
+| Part | What it does |
+| :--- | :--- |
+| `backend/routers/answers.py` | Transcribes and grades each answer, computes delivery metrics |
+| `backend/routers/sessions.py` | Interview sessions and searchable history |
+| `backend/seed_db.py` | Loads the 330+ questions without wiping user results |
+| `frontend/src/pages/Interview.jsx` | Recording, timer and live eye-contact overlay |
+| `frontend/src/pages/FeedbackReport.jsx` | The per-answer report |
+
+## Quickstart
+
 ```bash
-cd backend
-python3 check_sessions.py
-```
-
----
-
-## 💻 Local Development
-
-```bash
-# Backend
-cd backend && source venv/bin/activate
+# backend · needs DATABASE_URL (MySQL / TiDB), SECRET_KEY, ALGORITHM=HS256 and a Groq key
+cd backend && python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+python3 seed_db.py            # load the question bank
 uvicorn main:app --reload
 
-# Frontend
-cd frontend
-npm install && npm run dev
+# frontend · set VITE_API_BASE_URL to the backend URL
+cd frontend && npm install && npm run dev
 ```
 
----
+## Design decisions
 
-## 📖 API Reference
+- **Score the content with an LLM, the delivery with code.** Filler words and pace are counted directly, which is cheaper and more consistent than asking a model.
+- **Eye tracking stays in the browser.** Only audio is uploaded, so the video of your face is never stored.
+- **Questions are data.** Companies and roles come from the database, so the question bank grows with a seed script, not a release.
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/auth/metadata` | GET | Dynamically fetch all companies/roles in the DB. |
-| `/sessions` | POST/GET | Create and review searchable interview history. |
-| `/answers` | POST/GET | Submit audio (WAV) for AI Pipeline evaluation. |
-| `/dashboard` | GET | Get your performance trends and score averages. |
+## Limits & roadmap
 
----
-
-## 🔥 Unleash the AI
-Get your free API key at [console.groq.com](https://console.groq.com) and verify it directly in the MockVue UI!
+- [ ] ⚠️ Answer grading calls `llama-3.3-70b-versatile`, which Groq retired in October 2026; move it to a current model with a fallback chain
+- [ ] Calibrate the AI grades against human-scored answers
 
 ---
 
-Built by [Shlok Bam](https://shlokbam.in), see more projects on my portfolio.
+<div align="center">
+
+<a href="https://shlokbam.in"><img src=".github/assets/footer.svg" alt="Built by Shlok Bam" width="100%"></a>
+
+<a href="https://shlokbam.in">shlokbam.in</a> · <a href="https://www.linkedin.com/in/shlokbam/">LinkedIn</a> · <a href="https://github.com/shlokbam">More projects</a>
+
+</div>
